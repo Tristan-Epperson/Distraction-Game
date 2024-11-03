@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1 to 50 Game</title>
+    <title>50 to 1 Game</title>
     <style>
         body {
             display: flex;
@@ -60,25 +60,25 @@
 </head>
 <body>
 
-    <h1>1 to 50</h1>
-    <p>Click from 1 to 50 as fast as you can!</p>
+    <h1>50 to 1</h1>
+    <p>Click from 50 to 1 as fast as you can!</p>
     <button class="button" onclick="startGame()">Start Game</button>
-    <div class="counter" id="currentNumberDisplay">Current Number: 1</div>
+    <div class="counter" id="currentNumberDisplay">Current Number: 50</div>
     <div class="grid"></div>
     <p id="timer" class="timer">Time: 0.00s</p>
 
     <script>
-        let currentNumber = 1;
+        let currentNumber = 50;
         let timer;
         let startTime;
         const gridElement = document.querySelector('.grid');
         const timerElement = document.getElementById('timer');
         const currentNumberDisplay = document.getElementById('currentNumberDisplay');
-        let remainingNumbers = []; // To keep track of available numbers (26-50) to ensure no duplicates
+        let remainingNumbers = []; // To keep track of available numbers (1-25) to ensure no duplicates
 
         function startGame() {
-            currentNumber = 1;
-            remainingNumbers = Array.from({ length: 25 }, (_, i) => i + 26); // Initialize remaining numbers (26-50)
+            currentNumber = 50;
+            remainingNumbers = Array.from({ length: 25 }, (_, i) => i + 1); // Initialize remaining numbers (1-25)
             remainingNumbers.sort(() => Math.random() - 0.5); // Shuffle remaining numbers
             startTime = new Date();
             timer = setInterval(updateTimer, 10);
@@ -88,11 +88,11 @@
         }
 
         function generateGrid() {
-            // Create numbers array from 1 to 25 and shuffle for initial grid
-            const initialNumbers = Array.from({ length: 25 }, (_, i) => i + 1);
+            // Create numbers array from 26 to 50 and shuffle for initial grid
+            const initialNumbers = Array.from({ length: 25 }, (_, i) => i + 26);
             initialNumbers.sort(() => Math.random() - 0.5);
 
-            // Display the first 25 numbers in the grid
+            // Display the numbers 26 to 50 in the grid
             gridElement.innerHTML = '';
             for (let i = 0; i < 25; i++) {
                 const cell = document.createElement('div');
@@ -108,20 +108,20 @@
             const clickedNumber = parseInt(cell.dataset.number);
 
             if (clickedNumber === currentNumber) {
-                // Correct click: Update cell with the next number and advance the game
-                if (currentNumber < 50) {
+                // Correct click: Update cell with the next number and continue countdown
+                if (currentNumber > 1) {
                     const nextNumber = remainingNumbers.shift(); // Take the next number from the shuffled list
                     cell.textContent = nextNumber;
                     cell.dataset.number = nextNumber;
                 } else {
-                    cell.style.visibility = 'hidden'; // Hide the cell after number 50
+                    cell.style.visibility = 'hidden'; // Hide the cell after reaching 1
                 }
-                
-                currentNumber++;
+
+                currentNumber--;
                 currentNumberDisplay.textContent = `Current Number: ${currentNumber}`; // Update the counter display
 
                 // Check if the game is completed
-                if (currentNumber > 50) {
+                if (currentNumber < 1) {
                     clearInterval(timer);
                     alert("Congratulations! You completed the game in " + timerElement.textContent);
                 }
