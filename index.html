@@ -46,7 +46,7 @@
             margin-top: 20px;
             padding: 10px 20px;
             font-size: 16px;
-            background-color: #4CAF50;
+            background-color: #FFA500; /* Orange color for Start/Restart button */
             color: white;
             border: none;
             cursor: pointer;
@@ -126,7 +126,7 @@
                 // Check if the game is completed
                 if (currentNumber < 1) {
                     clearInterval(timer);
-                    alert("Congratulations! You completed the game in " + timerElement.textContent);
+                    showCompletionMessage();
                 }
             } else {
                 // Wrong click: Temporarily change the color to red
@@ -135,6 +135,16 @@
                     cell.classList.remove('wrong');
                 }, 1000); // Remove the red color after 1 second
             }
+        }
+
+        function showCompletionMessage() {
+            const completionTime = timerElement.textContent;
+            gridElement.innerHTML = ''; // Clear the grid
+            const message = document.createElement('div');
+            message.style.fontSize = '24px';
+            message.style.fontWeight = 'bold';
+            message.textContent = `Your time was ${completionTime}`;
+            gridElement.appendChild(message);
         }
 
         function updateTimer() {
