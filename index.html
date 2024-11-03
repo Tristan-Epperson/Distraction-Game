@@ -62,7 +62,7 @@
 
     <h1>50 to 1</h1>
     <p>Click from 50 to 1 as fast as you can!</p>
-    <button class="button" onclick="startGame()">Start Game</button>
+    <button class="button" id="startButton" onclick="startGame()">Start Game</button>
     <div class="counter" id="currentNumberDisplay">Current Number: 50</div>
     <div class="grid"></div>
     <p id="timer" class="timer">Time: 0.00s</p>
@@ -74,6 +74,7 @@
         const gridElement = document.querySelector('.grid');
         const timerElement = document.getElementById('timer');
         const currentNumberDisplay = document.getElementById('currentNumberDisplay');
+        const startButton = document.getElementById('startButton');
         let remainingNumbers = []; // To keep track of available numbers (1-25) to ensure no duplicates
 
         function startGame() {
@@ -81,10 +82,12 @@
             remainingNumbers = Array.from({ length: 25 }, (_, i) => i + 1); // Initialize remaining numbers (1-25)
             remainingNumbers.sort(() => Math.random() - 0.5); // Shuffle remaining numbers
             startTime = new Date();
+            clearInterval(timer); // Reset the timer on each restart
             timer = setInterval(updateTimer, 10);
             timerElement.textContent = "Time: 0.00s";
             currentNumberDisplay.textContent = `Current Number: ${currentNumber}`;
             generateGrid();
+            startButton.textContent = "Restart"; // Change button text to "Restart" after starting the game
         }
 
         function generateGrid() {
