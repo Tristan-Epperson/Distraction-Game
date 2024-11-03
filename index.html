@@ -32,9 +32,7 @@
             width: 100px;
             height: 100px;
             user-select: none;
-        }
-        .cell.correct {
-            background-color: #10b981;
+            transition: background-color 0.3s ease;
         }
         .button {
             margin-top: 20px;
@@ -46,6 +44,10 @@
             cursor: pointer;
             border-radius: 5px;
         }
+        .timer {
+            margin-top: 20px;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
@@ -54,58 +56,54 @@
     <p>Click from 1 to 50 as fast as you can!</p>
     <button class="button" onclick="startGame()">Start Game</button>
     <div class="grid"></div>
-    <p id="timer">Time: 0.00s</p>
+    <p id="timer" class="timer">Time: 0.00s</p>
 
     <script>
         let currentNumber = 1;
         let timer;
         let startTime;
-        let numbers;
         const gridElement = document.querySelector('.grid');
         const timerElement = document.getElementById('timer');
 
         function startGame() {
             currentNumber = 1;
-            numbers = Array.from({ length: 50 }, (_, i) => i + 1); // Create array [1, 2, ..., 50]
-            gridElement.innerHTML = '';
             startTime = new Date();
             timer = setInterval(updateTimer, 10);
             timerElement.textContent = "Time: 0.00s";
-            shuffleAndFillGrid();
+            generateGrid();
         }
 
-        function shuffleAndFillGrid() {
-            // Shuffle numbers array and take first 25 numbers for initial grid
-            const initialNumbers = numbers.slice(0, 25);
-            initialNumbers.sort(() => Math.random() - 0.5);
-            
-            // Display first 25 numbers in the grid
+        function generateGrid() {
+            // Create numbers array from 1 to 25 and 26 to 50
+            const initialNumbers = Array.from({ length: 25 }, (_, i) => i + 1);
+            const remainingNumbers = Array.from({ length: 25 }, (_, i) => i + 26);
+            initialNumbers.sort(() => Math.random() - 0.5); // Shuffle initial numbers
+
+            // Display the first 25 numbers in the grid
+            gridElement.innerHTML = '';
             for (let i = 0; i < 25; i++) {
                 const cell = document.createElement('div');
                 cell.classList.add('cell');
                 cell.textContent = initialNumbers[i];
                 cell.dataset.number = initialNumbers[i];
-                cell.onclick = () => cellClicked(cell);
+                cell.onclick = () => cellClicked(cell, remainingNumbers);
                 gridElement.appendChild(cell);
             }
         }
 
-        function cellClicked(cell) {
-            // Check if the clicked cell has the correct number
+        function cellClicked(cell, remainingNumbers) {
             if (parseInt(cell.dataset.number) === currentNumber) {
-                cell.classList.add('correct'); // Mark as correct
-                currentNumber++; // Increment the number we are looking for
-
-                if (currentNumber <= 50) {
-                    // Update the clicked cell with the next number in sequence (to maintain 25 numbers on screen)
-                    cell.textContent = currentNumber;
-                    cell.dataset.number = currentNumber;
+                // Update cell with the next number, keeping the same color
+                if (currentNumber < 50) {
+                    const nextNumber = remainingNumbers.shift(); // Get next number
+                    cell.textContent = nextNumber;
+                    cell.dataset.number = nextNumber;
                 } else {
-                    // Once we reach 50, hide the cell
-                    cell.classList.add('hidden');
+                    cell.style.visibility = 'hidden'; // Hide cell after 50
                 }
-
-                // Check for completion
+                currentNumber++;
+                
+                // Check for game completion
                 if (currentNumber > 50) {
                     clearInterval(timer);
                     alert("Congratulations! You completed the game in " + timerElement.textContent);
