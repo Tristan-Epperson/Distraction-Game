@@ -14,6 +14,11 @@
         h1 {
             margin-top: 20px;
         }
+        .counter {
+            font-size: 24px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
         .grid {
             display: grid;
             grid-template-columns: repeat(5, 100px);
@@ -33,6 +38,9 @@
             height: 100px;
             user-select: none;
             transition: background-color 0.3s ease;
+        }
+        .cell.wrong {
+            background-color: #f87171; /* Red color for wrong selection */
         }
         .button {
             margin-top: 20px;
@@ -55,6 +63,7 @@
     <h1>1 to 50</h1>
     <p>Click from 1 to 50 as fast as you can!</p>
     <button class="button" onclick="startGame()">Start Game</button>
+    <div class="counter" id="currentNumberDisplay">Current Number: 1</div>
     <div class="grid"></div>
     <p id="timer" class="timer">Time: 0.00s</p>
 
@@ -64,6 +73,7 @@
         let startTime;
         const gridElement = document.querySelector('.grid');
         const timerElement = document.getElementById('timer');
+        const currentNumberDisplay = document.getElementById('currentNumberDisplay');
         let remainingNumbers = []; // To keep track of available numbers (26-50) to ensure no duplicates
 
         function startGame() {
@@ -73,6 +83,7 @@
             startTime = new Date();
             timer = setInterval(updateTimer, 10);
             timerElement.textContent = "Time: 0.00s";
+            currentNumberDisplay.textContent = `Current Number: ${currentNumber}`;
             generateGrid();
         }
 
@@ -94,9 +105,10 @@
         }
 
         function cellClicked(cell) {
-            // Check if the clicked cell contains the correct current number
-            if (parseInt(cell.dataset.number) === currentNumber) {
-                // Mark the cell as "clicked" and replace the number with a unique random number from remainingNumbers
+            const clickedNumber = parseInt(cell.dataset.number);
+
+            if (clickedNumber === currentNumber) {
+                // Correct click: Update cell with the next number and advance the game
                 if (currentNumber < 50) {
                     const nextNumber = remainingNumbers.shift(); // Take the next number from the shuffled list
                     cell.textContent = nextNumber;
@@ -104,13 +116,21 @@
                 } else {
                     cell.style.visibility = 'hidden'; // Hide the cell after number 50
                 }
+                
                 currentNumber++;
+                currentNumberDisplay.textContent = `Current Number: ${currentNumber}`; // Update the counter display
 
                 // Check if the game is completed
                 if (currentNumber > 50) {
                     clearInterval(timer);
                     alert("Congratulations! You completed the game in " + timerElement.textContent);
                 }
+            } else {
+                // Wrong click: Temporarily change the color to red
+                cell.classList.add('wrong');
+                setTimeout(() => {
+                    cell.classList.remove('wrong');
+                }, 1000); // Remove the red color after 1 second
             }
         }
 
