@@ -64,9 +64,12 @@
         let startTime;
         const gridElement = document.querySelector('.grid');
         const timerElement = document.getElementById('timer');
+        let remainingNumbers = []; // To keep track of available numbers (26-50) to ensure no duplicates
 
         function startGame() {
             currentNumber = 1;
+            remainingNumbers = Array.from({ length: 25 }, (_, i) => i + 26); // Initialize remaining numbers (26-50)
+            remainingNumbers.sort(() => Math.random() - 0.5); // Shuffle remaining numbers
             startTime = new Date();
             timer = setInterval(updateTimer, 10);
             timerElement.textContent = "Time: 0.00s";
@@ -74,10 +77,9 @@
         }
 
         function generateGrid() {
-            // Create numbers array from 1 to 25 and 26 to 50
+            // Create numbers array from 1 to 25 and shuffle for initial grid
             const initialNumbers = Array.from({ length: 25 }, (_, i) => i + 1);
-            const remainingNumbers = Array.from({ length: 25 }, (_, i) => i + 26);
-            initialNumbers.sort(() => Math.random() - 0.5); // Shuffle initial numbers
+            initialNumbers.sort(() => Math.random() - 0.5);
 
             // Display the first 25 numbers in the grid
             gridElement.innerHTML = '';
@@ -86,24 +88,25 @@
                 cell.classList.add('cell');
                 cell.textContent = initialNumbers[i];
                 cell.dataset.number = initialNumbers[i];
-                cell.onclick = () => cellClicked(cell, remainingNumbers);
+                cell.onclick = () => cellClicked(cell);
                 gridElement.appendChild(cell);
             }
         }
 
-        function cellClicked(cell, remainingNumbers) {
+        function cellClicked(cell) {
+            // Check if the clicked cell contains the correct current number
             if (parseInt(cell.dataset.number) === currentNumber) {
-                // Update cell with the next number, keeping the same color
+                // Mark the cell as "clicked" and replace the number with a unique random number from remainingNumbers
                 if (currentNumber < 50) {
-                    const nextNumber = remainingNumbers.shift(); // Get next number
+                    const nextNumber = remainingNumbers.shift(); // Take the next number from the shuffled list
                     cell.textContent = nextNumber;
                     cell.dataset.number = nextNumber;
                 } else {
-                    cell.style.visibility = 'hidden'; // Hide cell after 50
+                    cell.style.visibility = 'hidden'; // Hide the cell after number 50
                 }
                 currentNumber++;
-                
-                // Check for game completion
+
+                // Check if the game is completed
                 if (currentNumber > 50) {
                     clearInterval(timer);
                     alert("Congratulations! You completed the game in " + timerElement.textContent);
