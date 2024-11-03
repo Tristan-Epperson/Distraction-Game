@@ -1,1 +1,98 @@
-(p)Hello World(/p)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Down from 30 Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        #counter {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        #button {
+            padding: 10px 20px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .distraction {
+            position: absolute;
+            background-color: rgba(255, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="counter">30</div>
+<button id="button">Click to Decrease</button>
+
+<script>
+    let counter = 30;
+    let distractions = [];
+    const maxDistractions = 5;
+
+    const counterElement = document.getElementById('counter');
+    const buttonElement = document.getElementById('button');
+
+    buttonElement.addEventListener('click', () => {
+        if (counter > 0) {
+            counter--;
+            updateCounter();
+        }
+    });
+
+    function updateCounter() {
+        counterElement.innerText = counter;
+
+        if (counter === 0) {
+            alert('Congratulations! You reached 0!');
+            resetGame();
+        }
+    }
+
+    function resetGame() {
+        counter = 30;
+        distractions.forEach(distraction => distraction.remove());
+        distractions = [];
+        updateCounter();
+    }
+
+    function createDistraction() {
+        const distraction = document.createElement('div');
+        distraction.className = 'distraction';
+        distraction.innerText = 'Distracted!';
+        distraction.style.left = Math.random() * window.innerWidth + 'px';
+        distraction.style.top = Math.random() * window.innerHeight + 'px';
+        document.body.appendChild(distraction);
+        distractions.push(distraction);
+
+        setTimeout(() => {
+            distraction.remove();
+            distractions = distractions.filter(d => d !== distraction);
+        }, 2000);
+    }
+
+    function startDistractions() {
+        if (counter > 0) {
+            createDistraction();
+            setTimeout(startDistractions, Math.random() * 2000 + 1000);
+        }
+    }
+
+    startDistractions();
+</script>
+
+</body>
+</html>
+
