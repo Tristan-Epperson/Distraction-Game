@@ -36,9 +36,6 @@
         .cell.correct {
             background-color: #10b981;
         }
-        .hidden {
-            display: none;
-        }
         .button {
             margin-top: 20px;
             padding: 10px 20px;
@@ -63,41 +60,52 @@
         let currentNumber = 1;
         let timer;
         let startTime;
+        let numbers;
         const gridElement = document.querySelector('.grid');
         const timerElement = document.getElementById('timer');
 
         function startGame() {
             currentNumber = 1;
-            generateGrid();
+            numbers = Array.from({ length: 50 }, (_, i) => i + 1); // Create array [1, 2, ..., 50]
+            gridElement.innerHTML = '';
             startTime = new Date();
             timer = setInterval(updateTimer, 10);
             timerElement.textContent = "Time: 0.00s";
+            shuffleAndFillGrid();
         }
 
-        function generateGrid() {
-            const numbers = Array.from({ length: 50 }, (_, i) => i + 1);
-            numbers.sort(() => Math.random() - 0.5);
-            gridElement.innerHTML = '';
+        function shuffleAndFillGrid() {
+            // Shuffle numbers array and take first 25 numbers for initial grid
+            const initialNumbers = numbers.slice(0, 25);
+            initialNumbers.sort(() => Math.random() - 0.5);
+            
+            // Display first 25 numbers in the grid
             for (let i = 0; i < 25; i++) {
                 const cell = document.createElement('div');
                 cell.classList.add('cell');
-                cell.textContent = numbers[i];
-                cell.dataset.number = numbers[i];
+                cell.textContent = initialNumbers[i];
+                cell.dataset.number = initialNumbers[i];
                 cell.onclick = () => cellClicked(cell);
                 gridElement.appendChild(cell);
             }
         }
 
         function cellClicked(cell) {
+            // Check if the clicked cell has the correct number
             if (parseInt(cell.dataset.number) === currentNumber) {
-                cell.classList.add('correct');
-                if (currentNumber <= 25) {
-                    cell.textContent = currentNumber + 25;
-                    cell.dataset.number = currentNumber + 25;
+                cell.classList.add('correct'); // Mark as correct
+                currentNumber++; // Increment the number we are looking for
+
+                if (currentNumber <= 50) {
+                    // Update the clicked cell with the next number in sequence (to maintain 25 numbers on screen)
+                    cell.textContent = currentNumber;
+                    cell.dataset.number = currentNumber;
                 } else {
+                    // Once we reach 50, hide the cell
                     cell.classList.add('hidden');
                 }
-                currentNumber++;
+
+                // Check for completion
                 if (currentNumber > 50) {
                     clearInterval(timer);
                     alert("Congratulations! You completed the game in " + timerElement.textContent);
