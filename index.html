@@ -44,7 +44,7 @@
             width: 100px;
             height: 100px;
             user-select: none;
-            transition: background-color 0.3s ease, opacity 1s ease; /* Added opacity transition */
+            transition: background-color 0.3s ease, opacity 1s ease; /* Opacity transition */
         }
         .cell.wrong {
             background-color: #f87171;
@@ -123,16 +123,18 @@
             const clickedNumber = parseInt(cell.dataset.number);
 
             if (clickedNumber === currentNumber) {
+                // Correct click: Fade out the cell and update the next number
+                cell.style.opacity = '0';
+                setTimeout(() => {
+                    cell.style.visibility = 'hidden';
+                }, 1000); // Make the cell invisible after 1 second
+
                 if (currentNumber > 1) {
-                    const nextNumber = remainingNumbers.shift();
+                    const nextNumber = remainingNumbers.shift(); // Get the next number from the list
                     cell.textContent = nextNumber;
                     cell.dataset.number = nextNumber;
-                } else {
-                    // Fade out the cell on the last correct number
-                    cell.style.opacity = '0';
-                    setTimeout(() => {
-                        cell.style.visibility = 'hidden';
-                    }, 1000);
+                    cell.style.opacity = '1'; // Reset opacity for the new number
+                    cell.style.visibility = 'visible'; // Ensure the cell is visible again
                 }
 
                 currentNumber--;
@@ -143,6 +145,7 @@
                     showCompletionMessage();
                 }
             } else {
+                // Wrong click: Indicate with a temporary color change
                 cell.classList.add('wrong');
                 setTimeout(() => {
                     cell.classList.remove('wrong');
@@ -152,7 +155,7 @@
 
         function showCompletionMessage() {
             const completionTime = timerElement.textContent.replace("Time: ", "");
-            gridElement.innerHTML = '';
+            gridElement.innerHTML = ''; // Clear the grid
             timerElement.textContent = ''; // Clear timer display
             const message = document.createElement('div');
             message.classList.add('completion-message');
