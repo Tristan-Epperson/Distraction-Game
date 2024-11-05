@@ -44,7 +44,7 @@
             width: 100px;
             height: 100px;
             user-select: none;
-            transition: background-color 0.3s ease, opacity 1s ease; /* Opacity transition */
+            transition: opacity 2s ease; /* Slower fade-out transition */
         }
         .cell.wrong {
             background-color: #f87171;
@@ -123,11 +123,13 @@
             const clickedNumber = parseInt(cell.dataset.number);
 
             if (clickedNumber === currentNumber) {
-                // Correct click: Fade out the cell and update the next number
-                cell.style.opacity = '0';
-                setTimeout(() => {
-                    cell.style.visibility = 'hidden';
-                }, 1000); // Make the cell invisible after 1 second
+                // If the clicked number is 25 or below, apply a slow fade-out effect
+                if (clickedNumber <= 25) {
+                    cell.style.opacity = '0';
+                    setTimeout(() => {
+                        cell.style.visibility = 'hidden';
+                    }, 2000); // Make the cell invisible after 2 seconds
+                }
 
                 if (currentNumber > 1) {
                     const nextNumber = remainingNumbers.shift(); // Get the next number from the list
