@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>50 to 1 Game</title>
-    <!-- Add Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -44,15 +43,16 @@
             width: 100px;
             height: 100px;
             user-select: none;
-            transition: background-color 2s ease, color 2s ease, opacity 2s ease; /* Transition properties */
+            transition: background-color 2s ease, color 2s ease, opacity 2s ease;
         }
         .cell.correct {
-            background-color: #2a2a2a; /* Background color matches body */
-            color: #2a2a2a; /* Text color matches body */
-            opacity: 0; /* Fade to transparent */
+            background-color: #2a2a2a;
+            color: #2a2a2a;
+            opacity: 0;
         }
         .cell.wrong {
             background-color: #f87171;
+            transition: background-color 1s;
         }
         .button {
             margin-top: 20px;
@@ -70,10 +70,28 @@
             font-size: 20px;
             color: #00ff88;
         }
-        .completion-message {
-            font-size: 26px;
-            font-weight: bold;
-            color: #ffcc00;
+        .completion-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #333;
+            color: #f1f1f1;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        .completion-modal .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: transparent;
+            border: none;
+            color: #f1f1f1;
+            font-size: 20px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -86,6 +104,12 @@
     <div class="grid"></div>
     <p id="timer" class="timer">Time: 0.00s</p>
 
+    <!-- Completion modal -->
+    <div id="completionModal" class="completion-modal">
+        <button class="close-btn" onclick="closeModal()">X</button>
+        <p id="completionMessage">Your time was 0.00s</p>
+    </div>
+
     <script>
         let currentNumber = 50;
         let timer;
@@ -94,6 +118,8 @@
         const timerElement = document.getElementById('timer');
         const currentNumberDisplay = document.getElementById('currentNumberDisplay');
         const startButton = document.getElementById('startButton');
+        const completionModal = document.getElementById('completionModal');
+        const completionMessage = document.getElementById('completionMessage');
         let remainingNumbers = [];
 
         function startGame() {
@@ -107,6 +133,7 @@
             currentNumberDisplay.textContent = `Current Number: ${currentNumber}`;
             generateGrid();
             startButton.textContent = "Restart";
+            completionModal.style.display = 'none';
         }
 
         function generateGrid() {
@@ -151,7 +178,7 @@
 
                 if (currentNumber < 1) {
                     clearInterval(timer);
-                    showCompletionMessage();
+                    showCompletionModal();
                 }
             } else {
                 cell.classList.add('wrong');
@@ -161,14 +188,14 @@
             }
         }
 
-        function showCompletionMessage() {
+        function showCompletionModal() {
             const completionTime = timerElement.textContent.replace("Time: ", "");
-            gridElement.innerHTML = '';
-            timerElement.textContent = '';
-            const message = document.createElement('div');
-            message.classList.add('completion-message');
-            message.textContent = `Your time was ${completionTime}`;
-            gridElement.appendChild(message);
+            completionMessage.textContent = `Your time was ${completionTime}`;
+            completionModal.style.display = 'block';
+        }
+
+        function closeModal() {
+            completionModal.style.display = 'none';
         }
 
         function updateTimer() {
