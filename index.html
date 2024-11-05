@@ -44,7 +44,12 @@
             width: 100px;
             height: 100px;
             user-select: none;
-            transition: opacity 2s ease; /* Slower fade-out transition */
+            transition: background-color 2s ease, color 2s ease, opacity 2s ease; /* Transition properties */
+        }
+        .cell.fading {
+            background-color: #2a2a2a; /* Fade to background color */
+            color: #2a2a2a; /* Fade text color */
+            opacity: 0; /* Fade to transparent */
         }
         .cell.wrong {
             background-color: #f87171;
@@ -123,9 +128,9 @@
             const clickedNumber = parseInt(cell.dataset.number);
 
             if (clickedNumber === currentNumber) {
-                // If the clicked number is 25 or below, apply a slow fade-out effect
+                // If the clicked number is 25 or below, apply the fade-out effect
                 if (clickedNumber <= 25) {
-                    cell.style.opacity = '0';
+                    cell.classList.add('fading');
                     setTimeout(() => {
                         cell.style.visibility = 'hidden';
                     }, 2000); // Make the cell invisible after 2 seconds
@@ -135,7 +140,10 @@
                     const nextNumber = remainingNumbers.shift(); // Get the next number from the list
                     cell.textContent = nextNumber;
                     cell.dataset.number = nextNumber;
-                    cell.style.opacity = '1'; // Reset opacity for the new number
+                    cell.classList.remove('fading'); // Reset for the new number
+                    cell.style.opacity = '1'; // Reset opacity
+                    cell.style.backgroundColor = '#3b82f6'; // Reset background color
+                    cell.style.color = 'white'; // Reset text color
                     cell.style.visibility = 'visible'; // Ensure the cell is visible again
                 }
 
