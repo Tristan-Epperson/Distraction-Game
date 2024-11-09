@@ -142,7 +142,7 @@
             initialNumbers.sort(() => Math.random() - 0.5); // Shuffle the numbers
 
             gridElement.innerHTML = '';
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < 25; i++) {  // Only create 25 buttons for the grid
                 const cell = document.createElement('div');
                 cell.classList.add('cell');
                 cell.textContent = initialNumbers[i];
@@ -267,5 +267,6 @@
             timerElement.textContent = "Time: " + currentTime.toFixed(2) + "s";
         }
     </script>
+
 </body>
 </html>
