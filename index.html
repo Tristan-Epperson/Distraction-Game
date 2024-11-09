@@ -138,11 +138,11 @@
         }
 
         function generateGrid() {
-            const initialNumbers = Array.from({ length: 25 }, (_, i) => i + 1);  // Only numbers 1 to 25
+            const initialNumbers = Array.from({ length: 50 }, (_, i) => 50 - i);  // Numbers 50 to 1
             initialNumbers.sort(() => Math.random() - 0.5); // Shuffle the numbers
 
             gridElement.innerHTML = '';
-            for (let i = 0; i < 25; i++) {
+            for (let i = 0; i < 50; i++) {
                 const cell = document.createElement('div');
                 cell.classList.add('cell');
                 cell.textContent = initialNumbers[i];
@@ -267,6 +267,5 @@
             timerElement.textContent = "Time: " + currentTime.toFixed(2) + "s";
         }
     </script>
-
 </body>
 </html>
