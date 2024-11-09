@@ -181,9 +181,15 @@
                     showCompletionModal();
                 }
             } else {
+                // Add class to show red flash for wrong answers on all numbers
                 cell.classList.add('wrong');
+
+                // Fallback method to ensure red color is applied for wrong answers
+                cell.style.backgroundColor = '#f87171';
+
                 setTimeout(() => {
                     cell.classList.remove('wrong');
+                    cell.style.backgroundColor = '#3b82f6'; // Reset to default
                 }, 1000);
             }
         }
