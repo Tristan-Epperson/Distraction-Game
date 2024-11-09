@@ -46,10 +46,7 @@
             transition: background-color 2s ease, color 2s ease, opacity 2s ease;
         }
         .cell.correct {
-            background-color: #2a2a2a;
-            color: #2a2a2a;
-            opacity: 0;
-            transition: opacity 2s ease;
+            visibility: hidden;
         }
         .cell.wrong {
             background-color: #f87171;
@@ -159,13 +156,10 @@
             const clickedNumber = parseInt(cell.dataset.number);
 
             if (clickedNumber === currentNumber) {
-                if (clickedNumber <= 25) {
-                    // Apply the correct class to fade away the number
-                    cell.classList.add('correct');
-                    setTimeout(() => {
-                        cell.style.visibility = 'hidden';
-                    }, 2000); // Wait 2 seconds before hiding the element
-                }
+                cell.classList.add('correct');
+                setTimeout(() => {
+                    cell.style.visibility = 'hidden';
+                }, 0); // Immediately disappear after click
 
                 if (currentNumber > 1) {
                     const nextNumber = remainingNumbers.shift();
@@ -232,11 +226,11 @@
             } else if (time < 120) {
                 animal = { name: 'Alert', speed: 5 };
             } else if (time < 130) {
-                animal = { name: 'Distracted', speed: 4 };
+                animal = { name: 'Slightly Distracted', speed: 4 };
             } else if (time < 140) {
-                animal = { name: 'Dazed', speed: 3 };
+                animal = { name: 'Distracted', speed: 3 };
             } else if (time < 150) {
-                animal = { name: 'Forgetful', speed: 2 };
+                animal = { name: 'Really Distracted', speed: 2 };
             } else {
                 animal = { name: 'Very Distracted', speed: 1 };
             }
@@ -257,11 +251,11 @@
             } else if (time < 120) {
                 return 'yellowgreen';  // Alert
             } else if (time < 130) {
-                return 'yelloworange';  // Distracted
+                return 'yelloworange';  // Slightly Distracted
             } else if (time < 140) {
-                return 'orange';  // Dazed
+                return 'orange';  // Distracted
             } else if (time < 150) {
-                return 'red';  // Forgetful
+                return 'red';  // Really Distracted
             } else {
                 return 'darkred';  // Very Distracted
             }
