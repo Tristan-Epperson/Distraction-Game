@@ -156,10 +156,11 @@
             const clickedNumber = parseInt(cell.dataset.number);
 
             if (clickedNumber === currentNumber) {
+                // Only hide the correct number
                 cell.classList.add('correct');
                 setTimeout(() => {
-                    cell.style.visibility = 'hidden';
-                }, 0); // Immediately disappear after click
+                    cell.style.visibility = 'hidden'; // Immediately hide after click
+                }, 0);
 
                 if (currentNumber > 1) {
                     const nextNumber = remainingNumbers.shift();
