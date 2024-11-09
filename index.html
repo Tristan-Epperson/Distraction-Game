@@ -49,6 +49,7 @@
             background-color: #2a2a2a;
             color: #2a2a2a;
             opacity: 0;
+            transition: opacity 2s ease;
         }
         .cell.wrong {
             background-color: #f87171;
@@ -92,6 +93,9 @@
             color: #f1f1f1;
             font-size: 20px;
             cursor: pointer;
+        }
+        .completion-modal p {
+            white-space: pre-wrap;
         }
     </style>
 </head>
@@ -156,10 +160,11 @@
 
             if (clickedNumber === currentNumber) {
                 if (clickedNumber <= 25) {
+                    // Apply the correct class to fade away the number
                     cell.classList.add('correct');
                     setTimeout(() => {
                         cell.style.visibility = 'hidden';
-                    }, 2000);
+                    }, 2000); // Wait 2 seconds before hiding the element
                 }
 
                 if (currentNumber > 1) {
@@ -200,7 +205,16 @@
             const color = getColorForTime(completionTime);
             completionMessage.innerHTML = `Your time was ${completionTime.toFixed(2)}s.<br><br>Speed: ${animal.speed}<br><br>You are ${animal.name}`;
             completionModal.style.display = 'block';
-            completionMessage.style.color = color;
+            completionMessage.style.color = 'white'; // White for time, speed, and animal
+
+            // Apply color only to distraction level (animal) text
+            const distractionColor = getColorForTime(completionTime);
+            const distractionText = completionMessage.innerHTML.split('<br><br>')[2];
+            completionMessage.innerHTML = `
+                Your time was ${completionTime.toFixed(2)}s.<br><br>
+                Speed: ${animal.speed}<br><br>
+                You are <span style="color:${distractionColor}">${distractionText}</span>
+            `;
         }
 
         function getAnimalForTime(time) {
