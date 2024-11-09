@@ -198,7 +198,7 @@
             const completionTime = (new Date() - startTime) / 1000;
             const animal = getAnimalForTime(completionTime);
             const color = getColorForTime(completionTime);
-            completionMessage.innerHTML = `Your time was ${completionTime.toFixed(2)}s.<br><br>Speed: ${animal.speed}<br><br>You are as fast as a ${animal.name}`;
+            completionMessage.innerHTML = `Your time was ${completionTime.toFixed(2)}s.<br><br>Speed: ${animal.speed}<br><br>You are ${animal.name}`;
             completionModal.style.display = 'block';
             completionMessage.style.color = color;
         }
@@ -206,50 +206,50 @@
         function getAnimalForTime(time) {
             let animal;
             if (time < 70) {
-                animal = { name: 'Cheetah', speed: 10 };
+                animal = { name: 'Super Focused', speed: 10 };
             } else if (time < 80) {
-                animal = { name: 'Wolf', speed: 9 };
+                animal = { name: 'Laser Focused', speed: 9 };
             } else if (time < 90) {
-                animal = { name: 'Lion', speed: 8 };
+                animal = { name: 'Focused', speed: 8 };
             } else if (time < 100) {
-                animal = { name: 'Horse', speed: 7 };
+                animal = { name: 'Concentrated', speed: 7 };
             } else if (time < 110) {
-                animal = { name: 'Rabbit', speed: 6 };
+                animal = { name: 'Attentive', speed: 6 };
             } else if (time < 120) {
-                animal = { name: 'Dog', speed: 5 };
+                animal = { name: 'Alert', speed: 5 };
             } else if (time < 130) {
-                animal = { name: 'Cat', speed: 4 };
+                animal = { name: 'Distracted', speed: 4 };
             } else if (time < 140) {
-                animal = { name: 'Sloth', speed: 3 };
+                animal = { name: 'Dazed', speed: 3 };
             } else if (time < 150) {
-                animal = { name: 'Tortoise', speed: 2 };
+                animal = { name: 'Forgetful', speed: 2 };
             } else {
-                animal = { name: 'Snail', speed: 1 };
+                animal = { name: 'Very Distracted', speed: 1 };
             }
             return animal;
         }
 
         function getColorForTime(time) {
             if (time < 70) {
-                return 'red';  // Cheetah
+                return 'green';  // Super Focused
             } else if (time < 80) {
-                return 'orange';  // Wolf
+                return 'lightgreen';  // Laser Focused
             } else if (time < 90) {
-                return 'yellow';  // Lion
+                return 'yellow';  // Focused
             } else if (time < 100) {
-                return 'lightgreen';  // Horse
+                return 'orange';  // Concentrated
             } else if (time < 110) {
-                return 'green';  // Rabbit
+                return 'gold';  // Attentive
             } else if (time < 120) {
-                return 'darkgreen';  // Dog
+                return 'yellowgreen';  // Alert
             } else if (time < 130) {
-                return 'green';  // Cat
+                return 'yelloworange';  // Distracted
             } else if (time < 140) {
-                return 'brown';  // Sloth
+                return 'orange';  // Dazed
             } else if (time < 150) {
-                return 'darkbrown';  // Tortoise
+                return 'red';  // Forgetful
             } else {
-                return 'blue';  // Snail
+                return 'darkred';  // Very Distracted
             }
         }
 
