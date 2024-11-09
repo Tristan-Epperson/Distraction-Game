@@ -7,7 +7,220 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
     <style>
         body {
+            display: flex;<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>50 to 1 Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
             display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Roboto Slab', serif;
+            background-color: #2a2a2a;
+            color: #f1f1f1;
+        }
+        h1 {
+            margin-top: 20px;
+            color: #ff5733;
+        }
+        .counter {
+            font-size: 28px;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #00d1ff;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 100px);
+            gap: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100px;
+            height: 100px;
+            user-select: none;
+            transition: background-color 2s ease, color 2s ease, opacity 2s ease;
+        }
+        .cell.correct {
+            background-color: #2a2a2a;
+            color: #2a2a2a;
+            opacity: 0;
+        }
+        .cell.wrong {
+            background-color: #f87171;
+            transition: background-color 1s;
+        }
+        .button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #FFA500;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: 'Roboto Slab', serif;
+        }
+        .timer {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #00ff88;
+        }
+        .completion-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #333;
+            color: #f1f1f1;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        .completion-modal .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: transparent;
+            border: none;
+            color: #f1f1f1;
+            font-size: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>50 to 1</h1>
+    <p>Click from 50 to 1 as fast as you can!</p>
+    <button class="button" id="startButton" onclick="startGame()">Start Game</button>
+    <div class="counter" id="currentNumberDisplay">Current Number: 50</div>
+    <div class="grid"></div>
+    <p id="timer" class="timer">Time: 0.00s</p>
+
+    <!-- Completion modal -->
+    <div id="completionModal" class="completion-modal">
+        <button class="close-btn" onclick="closeModal()">X</button>
+        <p id="completionMessage">Your time was 0.00s</p>
+    </div>
+
+    <script>
+        let currentNumber = 50;
+        let timer;
+        let startTime;
+        const gridElement = document.querySelector('.grid');
+        const timerElement = document.getElementById('timer');
+        const currentNumberDisplay = document.getElementById('currentNumberDisplay');
+        const startButton = document.getElementById('startButton');
+        const completionModal = document.getElementById('completionModal');
+        const completionMessage = document.getElementById('completionMessage');
+        let remainingNumbers = [];
+
+        function startGame() {
+            currentNumber = 50;
+            remainingNumbers = Array.from({ length: 25 }, (_, i) => i + 1);
+            remainingNumbers.sort(() => Math.random() - 0.5);
+            startTime = new Date();
+            clearInterval(timer);
+            timer = setInterval(updateTimer, 10);
+            timerElement.textContent = "Time: 0.00s";
+            currentNumberDisplay.textContent = `Current Number: ${currentNumber}`;
+            generateGrid();
+            startButton.textContent = "Restart";
+            completionModal.style.display = 'none';
+        }
+
+        function generateGrid() {
+            const initialNumbers = Array.from({ length: 25 }, (_, i) => i + 26);
+            initialNumbers.sort(() => Math.random() - 0.5);
+
+            gridElement.innerHTML = '';
+            for (let i = 0; i < 25; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.textContent = initialNumbers[i];
+                cell.dataset.number = initialNumbers[i];
+                cell.onclick = () => cellClicked(cell);
+                gridElement.appendChild(cell);
+            }
+        }
+
+        function cellClicked(cell) {
+            const clickedNumber = parseInt(cell.dataset.number);
+
+            if (clickedNumber === currentNumber) {
+                if (clickedNumber <= 25) {
+                    cell.classList.add('correct');
+                    setTimeout(() => {
+                        cell.style.visibility = 'hidden';
+                    }, 2000);
+                }
+
+                if (currentNumber > 1) {
+                    const nextNumber = remainingNumbers.shift();
+                    cell.textContent = nextNumber;
+                    cell.dataset.number = nextNumber;
+                    cell.classList.remove('correct');
+                    cell.style.opacity = '1';
+                    cell.style.backgroundColor = '#3b82f6';
+                    cell.style.color = 'white';
+                    cell.style.visibility = 'visible';
+                }
+
+                currentNumber--;
+                currentNumberDisplay.textContent = `Current Number: ${currentNumber}`;
+
+                if (currentNumber < 1) {
+                    clearInterval(timer);
+                    showCompletionModal();
+                }
+            } else {
+                // Add class to show red flash for wrong answers on all numbers
+                cell.classList.add('wrong');
+
+                // Fallback method to ensure red color is applied for wrong answers
+                cell.style.backgroundColor = '#f87171';
+
+                setTimeout(() => {
+                    cell.classList.remove('wrong');
+                    cell.style.backgroundColor = '#3b82f6'; // Reset to default
+                }, 1000);
+            }
+        }
+
+        function showCompletionModal() {
+            const completionTime = timerElement.textContent.replace("Time: ", "");
+            completionMessage.textContent = `Your time was ${completionTime}`;
+            completionModal.style.display = 'block';
+        }
+
+        function closeModal() {
+            completionModal.style.display = 'none';
+        }
+
+        function updateTimer() {
+            const currentTime = (new Date() - startTime) / 1000;
+            timerElement.textContent = "Time: " + currentTime.toFixed(2) + "s";
+        }
+    </script>
+
+</body>
+</html>
             flex-direction: column;
             align-items: center;
             font-family: 'Roboto Slab', serif;
