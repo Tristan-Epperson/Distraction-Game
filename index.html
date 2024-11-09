@@ -198,7 +198,7 @@
             const completionTime = (new Date() - startTime) / 1000;
             const animal = getAnimalForTime(completionTime);
             const color = getColorForTime(completionTime);
-            completionMessage.innerHTML = `Your time was ${completionTime.toFixed(2)}s.<br><br>Speed: ${animal.speed}<br>You are as fast as a ${animal.name}`;
+            completionMessage.innerHTML = `Your time was ${completionTime.toFixed(2)}s.<br><br>Speed: ${animal.speed}<br><br>You are as fast as a ${animal.name}`;
             completionModal.style.display = 'block';
             completionMessage.style.color = color;
         }
@@ -232,11 +232,24 @@
         function getColorForTime(time) {
             if (time < 70) {
                 return 'red';  // Cheetah
+            } else if (time < 80) {
+                return 'orange';  // Wolf
+            } else if (time < 90) {
+                return 'yellow';  // Lion
+            } else if (time < 100) {
+                return 'lightgreen';  // Horse
+            } else if (time < 110) {
+                return 'green';  // Rabbit
+            } else if (time < 120) {
+                return 'darkgreen';  // Dog
+            } else if (time < 130) {
+                return 'green';  // Cat
+            } else if (time < 140) {
+                return 'brown';  // Sloth
             } else if (time < 150) {
-                const green = Math.floor((time - 70) / 80 * 255); // Gradual transition to green
-                return `rgb(${255 - green}, ${green}, 0)`;  // Gradient from red to green
+                return 'darkbrown';  // Tortoise
             } else {
-                return 'green';  // Snail
+                return 'blue';  // Snail
             }
         }
 
