@@ -197,34 +197,47 @@
         function showCompletionModal() {
             const completionTime = (new Date() - startTime) / 1000;
             const animal = getAnimalForTime(completionTime);
-            completionMessage.textContent = `Your time was ${completionTime.toFixed(2)}s. Speed: ${animal.speed} You are as fast as a ${animal.name}`;
+            const color = getColorForTime(completionTime);
+            completionMessage.innerHTML = `Your time was ${completionTime.toFixed(2)}s.<br><br>Speed: ${animal.speed}<br>You are as fast as a ${animal.name}`;
             completionModal.style.display = 'block';
+            completionMessage.style.color = color;
         }
 
         function getAnimalForTime(time) {
             let animal;
-            if (time < 80) {
+            if (time < 70) {
                 animal = { name: 'Cheetah', speed: 10 };
-            } else if (time < 90) {
+            } else if (time < 80) {
                 animal = { name: 'Wolf', speed: 9 };
-            } else if (time < 100) {
+            } else if (time < 90) {
                 animal = { name: 'Lion', speed: 8 };
-            } else if (time < 110) {
+            } else if (time < 100) {
                 animal = { name: 'Horse', speed: 7 };
-            } else if (time < 120) {
+            } else if (time < 110) {
                 animal = { name: 'Rabbit', speed: 6 };
-            } else if (time < 130) {
+            } else if (time < 120) {
                 animal = { name: 'Dog', speed: 5 };
-            } else if (time < 140) {
+            } else if (time < 130) {
                 animal = { name: 'Cat', speed: 4 };
-            } else if (time < 150) {
+            } else if (time < 140) {
                 animal = { name: 'Sloth', speed: 3 };
-            } else if (time < 160) {
+            } else if (time < 150) {
                 animal = { name: 'Tortoise', speed: 2 };
             } else {
                 animal = { name: 'Snail', speed: 1 };
             }
             return animal;
+        }
+
+        function getColorForTime(time) {
+            if (time < 70) {
+                return 'red';  // Cheetah
+            } else if (time < 150) {
+                const green = Math.floor((time - 70) / 80 * 255); // Gradual transition to green
+                return `rgb(${255 - green}, ${green}, 0)`;  // Gradient from red to green
+            } else {
+                return 'green';  // Snail
+            }
         }
 
         function closeModal() {
