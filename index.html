@@ -220,9 +220,9 @@
         function getAnimalForTime(time) {
             let animal;
             if (time < 70) {
-                animal = { name: 'Super Focused', speed: 10 };
+                animal = { name: 'Laser Focused', speed: 10 };  // Adjusted for Laser Focused as fastest
             } else if (time < 80) {
-                animal = { name: 'Laser Focused', speed: 9 };
+                animal = { name: 'Super Focused', speed: 9 };   // Super Focused is now 9
             } else if (time < 90) {
                 animal = { name: 'Focused', speed: 8 };
             } else if (time < 100) {
@@ -245,9 +245,9 @@
 
         function getColorForTime(time) {
             if (time < 70) {
-                return 'green';  // Super Focused
+                return 'green';  // Laser Focused
             } else if (time < 80) {
-                return 'lightgreen';  // Laser Focused
+                return 'lightgreen';  // Super Focused
             } else if (time < 90) {
                 return 'yellow';  // Focused
             } else if (time < 100) {
