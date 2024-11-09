@@ -43,11 +43,12 @@
             width: 100px;
             height: 100px;
             user-select: none;
-            transition: background-color 1s, color 1s, opacity 1s;
+            transition: background-color 2s ease, color 2s ease, opacity 2s ease;
         }
         .cell.correct {
+            background-color: #2a2a2a;
+            color: #2a2a2a;
             opacity: 0;
-            transition: opacity 2s;
         }
         .cell.wrong {
             background-color: #f87171;
@@ -156,7 +157,6 @@
             if (clickedNumber === currentNumber) {
                 if (clickedNumber <= 25) {
                     cell.classList.add('correct');
-                } else {
                     setTimeout(() => {
                         cell.style.visibility = 'hidden';
                     }, 2000); // Make the cell invisible after 2 seconds
@@ -180,11 +180,11 @@
                     clearInterval(timer);
                     showCompletionModal();
                 }
-            } else if (clickedNumber >= 1 && clickedNumber <= 50) {
+            } else {
                 cell.classList.add('wrong');
                 setTimeout(() => {
                     cell.classList.remove('wrong');
-                }, 1000); // Reset the color after 1 second
+                }, 1000);
             }
         }
 
