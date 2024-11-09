@@ -46,7 +46,10 @@
             transition: background-color 2s ease, color 2s ease, opacity 2s ease;
         }
         .cell.correct {
-            visibility: hidden;
+            background-color: #2a2a2a;
+            color: #2a2a2a;
+            opacity: 0;
+            transition: opacity 2s ease;
         }
         .cell.wrong {
             background-color: #f87171;
@@ -125,7 +128,7 @@
 
         function startGame() {
             currentNumber = 50;
-            remainingNumbers = Array.from({ length: 25 }, (_, i) => i + 1);  // Create numbers 1-25
+            remainingNumbers = Array.from({ length: 25 }, (_, i) => i + 1);
             remainingNumbers.sort(() => Math.random() - 0.5);
             startTime = new Date();
             clearInterval(timer);
@@ -138,16 +141,16 @@
         }
 
         function generateGrid() {
-            const initialNumbers = Array.from({ length: 50 }, (_, i) => 50 - i);  // Numbers 50 to 1
-            initialNumbers.sort(() => Math.random() - 0.5); // Shuffle the numbers
+            const initialNumbers = Array.from({ length: 25 }, (_, i) => i + 26);
+            initialNumbers.sort(() => Math.random() - 0.5);
 
             gridElement.innerHTML = '';
-            for (let i = 0; i < 25; i++) {  // Only create 25 buttons for the grid
+            for (let i = 0; i < 25; i++) {
                 const cell = document.createElement('div');
                 cell.classList.add('cell');
                 cell.textContent = initialNumbers[i];
-                cell.dataset.number = initialNumbers[i]; // Set the number to the cell
-                cell.onclick = () => cellClicked(cell);  // Handle click
+                cell.dataset.number = initialNumbers[i];
+                cell.onclick = () => cellClicked(cell);
                 gridElement.appendChild(cell);
             }
         }
@@ -156,26 +159,27 @@
             const clickedNumber = parseInt(cell.dataset.number);
 
             if (clickedNumber === currentNumber) {
-                // Only hide the correct number (1-25 range)
                 if (clickedNumber <= 25) {
+                    // Apply the correct class to fade away the number
                     cell.classList.add('correct');
                     setTimeout(() => {
-                        cell.style.visibility = 'hidden'; // Immediately hide after click
-                    }, 0);
+                        cell.style.visibility = 'hidden';
+                    }, 2000); // Wait 2 seconds before hiding the element
                 }
 
                 if (currentNumber > 1) {
-                    currentNumber--;
-                    currentNumberDisplay.textContent = `Current Number: ${currentNumber}`;
-                    if (currentNumber <= 25) {
-                        // Replace the number clicked with the new number from remaining numbers
-                        const nextNumber = remainingNumbers.shift();
-                        cell.textContent = nextNumber;
-                        cell.dataset.number = nextNumber;
-                        cell.classList.remove('correct');
-                        cell.style.visibility = 'visible';
-                    }
+                    const nextNumber = remainingNumbers.shift();
+                    cell.textContent = nextNumber;
+                    cell.dataset.number = nextNumber;
+                    cell.classList.remove('correct');
+                    cell.style.opacity = '1';
+                    cell.style.backgroundColor = '#3b82f6';
+                    cell.style.color = 'white';
+                    cell.style.visibility = 'visible';
                 }
+
+                currentNumber--;
+                currentNumberDisplay.textContent = `Current Number: ${currentNumber}`;
 
                 if (currentNumber < 1) {
                     clearInterval(timer);
@@ -184,8 +188,13 @@
             } else {
                 // Add class to show red flash for wrong answers on all numbers
                 cell.classList.add('wrong');
+
+                // Fallback method to ensure red color is applied for wrong answers
+                cell.style.backgroundColor = '#f87171';
+
                 setTimeout(() => {
                     cell.classList.remove('wrong');
+                    cell.style.backgroundColor = '#3b82f6'; // Reset to default
                 }, 1000);
             }
         }
@@ -211,9 +220,9 @@
         function getAnimalForTime(time) {
             let animal;
             if (time < 70) {
-                animal = { name: 'Laser Focused', speed: 10 };
+                animal = { name: 'Laser Focused', speed: 10 };  // Adjusted for Laser Focused as fastest
             } else if (time < 80) {
-                animal = { name: 'Super Focused', speed: 9 };
+                animal = { name: 'Super Focused', speed: 9 };   // Super Focused is now 9
             } else if (time < 90) {
                 animal = { name: 'Focused', speed: 8 };
             } else if (time < 100) {
@@ -223,11 +232,11 @@
             } else if (time < 120) {
                 animal = { name: 'Alert', speed: 5 };
             } else if (time < 130) {
-                animal = { name: 'Slightly Distracted', speed: 4 };
+                animal = { name: 'Distracted', speed: 4 };
             } else if (time < 140) {
-                animal = { name: 'Distracted', speed: 3 };
+                animal = { name: 'Dazed', speed: 3 };
             } else if (time < 150) {
-                animal = { name: 'Really Distracted', speed: 2 };
+                animal = { name: 'Forgetful', speed: 2 };
             } else {
                 animal = { name: 'Very Distracted', speed: 1 };
             }
@@ -248,11 +257,11 @@
             } else if (time < 120) {
                 return 'yellowgreen';  // Alert
             } else if (time < 130) {
-                return 'yelloworange';  // Slightly Distracted
+                return 'yelloworange';  // Distracted
             } else if (time < 140) {
-                return 'orange';  // Distracted
+                return 'orange';  // Dazed
             } else if (time < 150) {
-                return 'red';  // Really Distracted
+                return 'red';  // Forgetful
             } else {
                 return 'darkred';  // Very Distracted
             }
