@@ -125,7 +125,7 @@
 
         function startGame() {
             currentNumber = 50;
-            remainingNumbers = Array.from({ length: 25 }, (_, i) => i + 1);
+            remainingNumbers = Array.from({ length: 25 }, (_, i) => i + 1);  // Create numbers 1-25
             remainingNumbers.sort(() => Math.random() - 0.5);
             startTime = new Date();
             clearInterval(timer);
@@ -138,16 +138,16 @@
         }
 
         function generateGrid() {
-            const initialNumbers = Array.from({ length: 25 }, (_, i) => i + 26);
-            initialNumbers.sort(() => Math.random() - 0.5);
+            const initialNumbers = Array.from({ length: 25 }, (_, i) => i + 1);  // Only numbers 1 to 25
+            initialNumbers.sort(() => Math.random() - 0.5); // Shuffle the numbers
 
             gridElement.innerHTML = '';
             for (let i = 0; i < 25; i++) {
                 const cell = document.createElement('div');
                 cell.classList.add('cell');
                 cell.textContent = initialNumbers[i];
-                cell.dataset.number = initialNumbers[i];
-                cell.onclick = () => cellClicked(cell);
+                cell.dataset.number = initialNumbers[i]; // Set the number to the cell
+                cell.onclick = () => cellClicked(cell);  // Handle click
                 gridElement.appendChild(cell);
             }
         }
@@ -156,25 +156,26 @@
             const clickedNumber = parseInt(cell.dataset.number);
 
             if (clickedNumber === currentNumber) {
-                // Only hide the correct number
-                cell.classList.add('correct');
-                setTimeout(() => {
-                    cell.style.visibility = 'hidden'; // Immediately hide after click
-                }, 0);
-
-                if (currentNumber > 1) {
-                    const nextNumber = remainingNumbers.shift();
-                    cell.textContent = nextNumber;
-                    cell.dataset.number = nextNumber;
-                    cell.classList.remove('correct');
-                    cell.style.opacity = '1';
-                    cell.style.backgroundColor = '#3b82f6';
-                    cell.style.color = 'white';
-                    cell.style.visibility = 'visible';
+                // Only hide the correct number (1-25 range)
+                if (clickedNumber <= 25) {
+                    cell.classList.add('correct');
+                    setTimeout(() => {
+                        cell.style.visibility = 'hidden'; // Immediately hide after click
+                    }, 0);
                 }
 
-                currentNumber--;
-                currentNumberDisplay.textContent = `Current Number: ${currentNumber}`;
+                if (currentNumber > 1) {
+                    currentNumber--;
+                    currentNumberDisplay.textContent = `Current Number: ${currentNumber}`;
+                    if (currentNumber <= 25) {
+                        // Replace the number clicked with the new number from remaining numbers
+                        const nextNumber = remainingNumbers.shift();
+                        cell.textContent = nextNumber;
+                        cell.dataset.number = nextNumber;
+                        cell.classList.remove('correct');
+                        cell.style.visibility = 'visible';
+                    }
+                }
 
                 if (currentNumber < 1) {
                     clearInterval(timer);
@@ -183,13 +184,8 @@
             } else {
                 // Add class to show red flash for wrong answers on all numbers
                 cell.classList.add('wrong');
-
-                // Fallback method to ensure red color is applied for wrong answers
-                cell.style.backgroundColor = '#f87171';
-
                 setTimeout(() => {
                     cell.classList.remove('wrong');
-                    cell.style.backgroundColor = '#3b82f6'; // Reset to default
                 }, 1000);
             }
         }
@@ -215,9 +211,9 @@
         function getAnimalForTime(time) {
             let animal;
             if (time < 70) {
-                animal = { name: 'Laser Focused', speed: 10 };  // Adjusted for Laser Focused as fastest
+                animal = { name: 'Laser Focused', speed: 10 };
             } else if (time < 80) {
-                animal = { name: 'Super Focused', speed: 9 };   // Super Focused is now 9
+                animal = { name: 'Super Focused', speed: 9 };
             } else if (time < 90) {
                 animal = { name: 'Focused', speed: 8 };
             } else if (time < 100) {
