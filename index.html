@@ -43,17 +43,11 @@
             width: 100px;
             height: 100px;
             user-select: none;
-            transition: background-color 2s ease, color 2s ease, opacity 2s ease;
         }
         .cell.correct {
             background-color: #2a2a2a;
             color: #2a2a2a;
-            opacity: 0;
-            transition: opacity 2s ease;
-        }
-        .cell.wrong {
-            background-color: #f87171;
-            transition: background-color 1s;
+            visibility: hidden;
         }
         .button {
             margin-top: 20px;
@@ -93,9 +87,6 @@
             color: #f1f1f1;
             font-size: 20px;
             cursor: pointer;
-        }
-        .completion-modal p {
-            white-space: pre-wrap;
         }
     </style>
 </head>
@@ -160,22 +151,12 @@
 
             if (clickedNumber === currentNumber) {
                 if (clickedNumber <= 25) {
-                    // Apply the correct class to fade away the number
                     cell.classList.add('correct');
-                    setTimeout(() => {
-                        cell.style.visibility = 'hidden';
-                    }, 2000); // Wait 2 seconds before hiding the element
-                }
-
-                if (currentNumber > 1) {
+                } else {
                     const nextNumber = remainingNumbers.shift();
                     cell.textContent = nextNumber;
                     cell.dataset.number = nextNumber;
                     cell.classList.remove('correct');
-                    cell.style.opacity = '1';
-                    cell.style.backgroundColor = '#3b82f6';
-                    cell.style.color = 'white';
-                    cell.style.visibility = 'visible';
                 }
 
                 currentNumber--;
@@ -186,85 +167,29 @@
                     showCompletionModal();
                 }
             } else {
-                // Add class to show red flash for wrong answers on all numbers
                 cell.classList.add('wrong');
-
-                // Fallback method to ensure red color is applied for wrong answers
-                cell.style.backgroundColor = '#f87171';
-
-                setTimeout(() => {
-                    cell.classList.remove('wrong');
-                    cell.style.backgroundColor = '#3b82f6'; // Reset to default
-                }, 1000);
+                setTimeout(() => cell.classList.remove('wrong'), 1000);
             }
         }
 
         function showCompletionModal() {
             const completionTime = (new Date() - startTime) / 1000;
-            const animal = getAnimalForTime(completionTime);
-            const color = getColorForTime(completionTime);
-            completionMessage.innerHTML = `Your time was ${completionTime.toFixed(2)}s.<br><br>Speed: ${animal.speed}<br><br>You are ${animal.name}`;
+            const focusLevel = getFocusLevelForTime(completionTime);
+            completionMessage.innerHTML = `Your time was ${completionTime.toFixed(2)}s.<br>Focus Level: ${focusLevel.name}`;
             completionModal.style.display = 'block';
-            completionMessage.style.color = 'white'; // White for time, speed, and animal
-
-            // Apply color only to distraction level (animal) text
-            const distractionColor = getColorForTime(completionTime);
-            const distractionText = completionMessage.innerHTML.split('<br><br>')[2];
-            completionMessage.innerHTML = `
-                Your time was ${completionTime.toFixed(2)}s.<br><br>
-                Speed: ${animal.speed}<br><br>
-                You are <span style="color:${distractionColor}">${distractionText}</span>
-            `;
         }
 
-        function getAnimalForTime(time) {
-            let animal;
-            if (time < 70) {
-                animal = { name: 'Laser Focused', speed: 10 };  // Adjusted for Laser Focused as fastest
-            } else if (time < 80) {
-                animal = { name: 'Super Focused', speed: 9 };   // Super Focused is now 9
-            } else if (time < 90) {
-                animal = { name: 'Focused', speed: 8 };
-            } else if (time < 100) {
-                animal = { name: 'Concentrated', speed: 7 };
-            } else if (time < 110) {
-                animal = { name: 'Attentive', speed: 6 };
-            } else if (time < 120) {
-                animal = { name: 'Alert', speed: 5 };
-            } else if (time < 130) {
-                animal = { name: 'Distracted', speed: 4 };
-            } else if (time < 140) {
-                animal = { name: 'Dazed', speed: 3 };
-            } else if (time < 150) {
-                animal = { name: 'Forgetful', speed: 2 };
-            } else {
-                animal = { name: 'Very Distracted', speed: 1 };
-            }
-            return animal;
-        }
-
-        function getColorForTime(time) {
-            if (time < 70) {
-                return 'green';  // Laser Focused
-            } else if (time < 80) {
-                return 'lightgreen';  // Super Focused
-            } else if (time < 90) {
-                return 'yellow';  // Focused
-            } else if (time < 100) {
-                return 'orange';  // Concentrated
-            } else if (time < 110) {
-                return 'gold';  // Attentive
-            } else if (time < 120) {
-                return 'yellowgreen';  // Alert
-            } else if (time < 130) {
-                return 'yelloworange';  // Distracted
-            } else if (time < 140) {
-                return 'orange';  // Dazed
-            } else if (time < 150) {
-                return 'red';  // Forgetful
-            } else {
-                return 'darkred';  // Very Distracted
-            }
+        function getFocusLevelForTime(time) {
+            if (time < 70) return { name: 'Laser Focused', level: 10 };
+            if (time < 80) return { name: 'Super Focused', level: 9 };
+            if (time < 90) return { name: 'Focused', level: 8 };
+            if (time < 100) return { name: 'Concentrated', level: 7 };
+            if (time < 110) return { name: 'Attentive', level: 6 };
+            if (time < 120) return { name: 'Alert', level: 5 };
+            if (time < 130) return { name: 'Distracted', level: 4 };
+            if (time < 140) return { name: 'Dazed', level: 3 };
+            if (time < 150) return { name: 'Forgetful', level: 2 };
+            return { name: 'Easily Distracted', level: 1 };
         }
 
         function closeModal() {
