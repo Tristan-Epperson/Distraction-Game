@@ -43,12 +43,15 @@
             width: 100px;
             height: 100px;
             user-select: none;
+            transition: background-color 0.5s, color 0.5s;
         }
         .cell.correct {
             visibility: hidden;
         }
         .cell.wrong {
             background-color: #f87171;
+            color: white;
+            transition: background-color 1s ease, color 1s ease;
         }
         .button {
             margin-top: 20px;
@@ -151,13 +154,16 @@
             const clickedNumber = parseInt(cell.dataset.number);
 
             if (clickedNumber === currentNumber) {
-                if (clickedNumber <= 25) {
-                    cell.classList.add('correct');
-                } else {
+                // Instantly remove the correct number
+                cell.classList.add('correct');
+
+                if (currentNumber > 1) {
                     const nextNumber = remainingNumbers.shift();
                     cell.textContent = nextNumber;
                     cell.dataset.number = nextNumber;
+                    cell.style.visibility = "visible"; // Ensure visibility for recycled cells
                 }
+
                 currentNumber--;
                 currentNumberDisplay.textContent = `Current Number: ${currentNumber}`;
 
@@ -166,11 +172,11 @@
                     showCompletionModal();
                 }
             } else {
-                // Wrong click logic: turn red temporarily
+                // Fade wrong click to red and back
                 cell.classList.add('wrong');
                 setTimeout(() => {
                     cell.classList.remove('wrong');
-                }, 1000);
+                }, 1000); // Wait 1 second to remove 'wrong' class
             }
         }
 
