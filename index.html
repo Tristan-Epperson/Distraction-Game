@@ -45,7 +45,31 @@
             user-select: none;
             transition: background-color 0.5s, color 0.5s;
         }
-        .completion-modal, .cheat-modal {
+        .cell.correct {
+            visibility: hidden;
+        }
+        .cell.wrong {
+            background-color: #f87171;
+            color: white;
+            transition: background-color 1s ease, color 1s ease;
+        }
+        .button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #FFA500;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: 'Roboto Slab', serif;
+        }
+        .timer {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #00ff88;
+        }
+        .completion-modal {
             display: none;
             position: fixed;
             top: 50%;
@@ -58,7 +82,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             z-index: 1000;
         }
-        .completion-modal .close-btn, .cheat-modal .close-btn {
+        .completion-modal .close-btn {
             position: absolute;
             top: 10px;
             right: 10px;
@@ -68,16 +92,16 @@
             font-size: 20px;
             cursor: pointer;
         }
-        .button {
+        .hidden-cheat-box {
+            display: none;
             margin-top: 20px;
-            padding: 10px 20px;
+            text-align: center;
+        }
+        .hidden-cheat-box input {
+            padding: 5px;
             font-size: 18px;
-            background-color: #FFA500;
-            color: white;
             border: none;
-            cursor: pointer;
             border-radius: 5px;
-            font-family: 'Roboto Slab', serif;
         }
     </style>
 </head>
@@ -96,29 +120,28 @@
         <p id="completionMessage">Your time was 0.00s</p>
     </div>
 
-    <!-- Cheat modal -->
-    <div id="cheatModal" class="cheat-modal">
-        <button class="close-btn" onclick="closeCheatModal()">X</button>
+    <!-- Hidden cheat input box -->
+    <div id="hiddenCheatBox" class="hidden-cheat-box">
         <p>Enter your desired end time (in seconds):</p>
-        <input type="number" id="cheatInput" step="0.01" placeholder="Enter time" />
-        <button class="button" onclick="applyCheatCode()">Submit</button>
+        <input id="cheatInput" type="text" placeholder="Enter time here">
+        <button onclick="activateCheat()">Submit</button>
     </div>
 
     <script>
         let currentNumber = 50;
         let timer;
         let startTime;
+        let cheatSequence = [9, 7, 0, 8, 5, 7, 3];
+        let cheatIndex = 0;
         const gridElement = document.querySelector('.grid');
         const timerElement = document.getElementById('timer');
         const currentNumberDisplay = document.getElementById('currentNumberDisplay');
         const startButton = document.getElementById('startButton');
         const completionModal = document.getElementById('completionModal');
         const completionMessage = document.getElementById('completionMessage');
-        const cheatModal = document.getElementById('cheatModal');
+        const hiddenCheatBox = document.getElementById('hiddenCheatBox');
         const cheatInput = document.getElementById('cheatInput');
         let remainingNumbers = [];
-        let cheatCodeInput = [];
-        const cheatCodeSequence = [9, 7, 0, 8, 5, 7, 3];
 
         function startGame() {
             currentNumber = 50;
@@ -132,6 +155,8 @@
             generateGrid();
             startButton.textContent = "Restart";
             completionModal.style.display = 'none';
+            hiddenCheatBox.style.display = 'none'; // Hide the cheat box if visible
+            cheatIndex = 0; // Reset cheat code
         }
 
         function generateGrid() {
@@ -160,13 +185,30 @@
                     clearInterval(timer);
                     showCompletionModal();
                 }
+            } else {
+                cell.classList.add('wrong');
+                setTimeout(() => cell.classList.remove('wrong'), 1000);
             }
         }
 
         function showCompletionModal() {
             const completionTime = (new Date() - startTime) / 1000;
-            completionMessage.innerHTML = `Your time was ${completionTime.toFixed(2)}s.`;
+            const focusLevel = getFocusLevelForTime(completionTime);
+            completionMessage.innerHTML = `Your time was ${completionTime.toFixed(2)}s.<br>Focus Level: ${focusLevel.name}`;
             completionModal.style.display = 'block';
+        }
+
+        function getFocusLevelForTime(time) {
+            if (time < 70) return { name: 'Laser Focused', level: 10 };
+            if (time < 80) return { name: 'Super Focused', level: 9 };
+            if (time < 90) return { name: 'Focused', level: 8 };
+            if (time < 100) return { name: 'Concentrated', level: 7 };
+            if (time < 110) return { name: 'Attentive', level: 6 };
+            if (time < 120) return { name: 'Alert', level: 5 };
+            if (time < 130) return { name: 'Distracted', level: 4 };
+            if (time < 140) return { name: 'Dazed', level: 3 };
+            if (time < 150) return { name: 'Forgetful', level: 2 };
+            return { name: 'Easily Distracted', level: 1 };
         }
 
         function closeModal() {
@@ -178,32 +220,28 @@
             timerElement.textContent = "Time: " + currentTime.toFixed(2) + "s";
         }
 
-        // Cheat code handling
+        // Cheat code detection
         document.addEventListener('keydown', (event) => {
-            cheatCodeInput.push(parseInt(event.key));
-            if (cheatCodeInput.length > cheatCodeSequence.length) {
-                cheatCodeInput.shift();
-            }
-            if (JSON.stringify(cheatCodeInput) === JSON.stringify(cheatCodeSequence)) {
-                cheatModal.style.display = 'block';
+            const pressedKey = parseInt(event.key);
+            if (pressedKey === cheatSequence[cheatIndex]) {
+                cheatIndex++;
+                if (cheatIndex === cheatSequence.length) {
+                    hiddenCheatBox.style.display = 'block';
+                    cheatIndex = 0;
+                }
+            } else {
+                cheatIndex = 0;
             }
         });
 
-        function closeCheatModal() {
-            cheatModal.style.display = 'none';
-        }
-
-        function applyCheatCode() {
-            const enteredTime = parseFloat(cheatInput.value);
-            if (!isNaN(enteredTime)) {
-                cheatModal.style.display = 'none';
-                showCompletionModalWithTime(enteredTime);
+        function activateCheat() {
+            const cheatTime = parseFloat(cheatInput.value);
+            if (!isNaN(cheatTime)) {
+                const focusLevel = getFocusLevelForTime(cheatTime);
+                completionMessage.innerHTML = `Your time was ${cheatTime.toFixed(2)}s.<br>Focus Level: ${focusLevel.name}`;
+                completionModal.style.display = 'block';
+                hiddenCheatBox.style.display = 'none';
             }
-        }
-
-        function showCompletionModalWithTime(time) {
-            completionMessage.innerHTML = `Your time was ${time.toFixed(2)}s.`;
-            completionModal.style.display = 'block';
         }
     </script>
 
