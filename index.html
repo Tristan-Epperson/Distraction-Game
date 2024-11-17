@@ -45,9 +45,10 @@
             user-select: none;
         }
         .cell.correct {
-            background-color: #2a2a2a;
-            color: #2a2a2a;
             visibility: hidden;
+        }
+        .cell.wrong {
+            background-color: #f87171;
         }
         .button {
             margin-top: 20px;
@@ -156,9 +157,7 @@
                     const nextNumber = remainingNumbers.shift();
                     cell.textContent = nextNumber;
                     cell.dataset.number = nextNumber;
-                    cell.classList.remove('correct');
                 }
-
                 currentNumber--;
                 currentNumberDisplay.textContent = `Current Number: ${currentNumber}`;
 
@@ -167,8 +166,11 @@
                     showCompletionModal();
                 }
             } else {
+                // Wrong click logic: turn red temporarily
                 cell.classList.add('wrong');
-                setTimeout(() => cell.classList.remove('wrong'), 1000);
+                setTimeout(() => {
+                    cell.classList.remove('wrong');
+                }, 1000);
             }
         }
 
