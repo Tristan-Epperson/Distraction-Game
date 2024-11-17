@@ -212,56 +212,59 @@
             timerElement.textContent = "Time: " + currentTime.toFixed(2) + "s";
         }
 
-function showDistraction() {
-    const distractionText = ["Look out!", "Hurry!", "What's that?", "Time's ticking!"];
-    const images = [
-        "https://media.giphy.com/media/bRTe2TGxczPVH50vxO/giphy.gif",  // Correct GIF URL
-        "https://media.giphy.com/media/Q81NcsY6YxK7jxnr4v/giphy.gif",  // Correct GIF URL
-        "https://media.giphy.com/media/xUPGcigl4eOfc6hA5y/giphy.gif"   // Correct GIF URL
-    ];
+        function showDistraction() {
+            const distractionText = ["Look out!", "Hurry!", "What's that?", "Time's ticking!"];
+            const images = [
+                "https://giphy.com/embed/bRTe2TGxczPVH50vxO.gif",
+                "https://giphy.com/embed/Q81NcsY6YxK7jxnr4v.gif",
+                "https://giphy.com/embed/xUPGcigl4eOfc6hA5y.gif"
+            ];
 
-    const isImage = Math.random() < 0.5;  // Randomly decide whether it's text or an image
-    const distractionElement = document.createElement("div");
-    distractionElement.classList.add("distraction");
+            // Randomly choose whether it's text or an image
+            const isImage = Math.random() > 0.5;
+            const randomDistraction = isImage
+                ? images[Math.floor(Math.random() * images.length)]
+                : distractionText[Math.floor(Math.random() * distractionText.length)];
 
-    if (isImage) {
-        const img = document.createElement("img");
-        img.src = images[Math.floor(Math.random() * images.length)];
-        img.style.width = "100px";
-        img.style.height = "100px";
-        distractionElement.appendChild(img);
-    } else {
-        distractionElement.textContent = distractionText[Math.floor(Math.random() * distractionText.length)];
-        distractionElement.style.fontSize = `${Math.random() * 30 + 15}px`;
-        distractionElement.style.color = getRandomColor();
-    }
+            const distractionElement = document.createElement("div");
+            distractionElement.classList.add("distraction");
 
-    // Randomly position the distraction element
-    const maxX = window.innerWidth - 150;
-    const maxY = window.innerHeight - 150;
-    const randomX = Math.random() * maxX;
-    const randomY = Math.random() * maxY;
+            if (isImage) {
+                const img = document.createElement("img");
+                img.src = randomDistraction;
+                img.style.width = "100px";
+                img.style.height = "100px";
+                distractionElement.appendChild(img);
+            } else {
+                distractionElement.textContent = randomDistraction;
+                distractionElement.style.fontSize = `${Math.random() * 30 + 15}px`;
+                distractionElement.style.color = getRandomColor();
+            }
 
-    distractionElement.style.left = `${randomX}px`;
-    distractionElement.style.top = `${randomY}px`;
+            // Randomly place distractions
+            const maxX = window.innerWidth - 150;  // Adjust for width of distractions
+            const maxY = window.innerHeight - 150; // Adjust for height of distractions
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
 
-    document.body.appendChild(distractionElement);
+            distractionElement.style.left = `${randomX}px`;
+            distractionElement.style.top = `${randomY}px`;
 
-    // Remove distraction after 3 seconds
-    setTimeout(() => {
-        distractionElement.remove();
-    }, 3000);
-}
+            document.body.appendChild(distractionElement);
 
-function getRandomColor() {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-}
+            // Remove distraction after 3 seconds
+            setTimeout(() => {
+                distractionElement.remove();
+            }, 3000);
+        }
 
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
         }
     </script>
 
