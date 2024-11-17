@@ -69,7 +69,7 @@
             font-size: 20px;
             color: #00ff88;
         }
-        .completion-modal, .secret-modal {
+        .completion-modal {
             display: none;
             position: fixed;
             top: 50%;
@@ -82,7 +82,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             z-index: 1000;
         }
-        .completion-modal .close-btn, .secret-modal .close-btn {
+        .completion-modal .close-btn {
             position: absolute;
             top: 10px;
             right: 10px;
@@ -91,13 +91,6 @@
             color: #f1f1f1;
             font-size: 20px;
             cursor: pointer;
-        }
-        .secret-modal input {
-            padding: 5px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: none;
-            margin-top: 10px;
         }
     </style>
 </head>
@@ -116,14 +109,6 @@
         <p id="completionMessage">Your time was 0.00s</p>
     </div>
 
-    <!-- Secret input modal -->
-    <div id="secretModal" class="secret-modal">
-        <button class="close-btn" onclick="closeSecretModal()">X</button>
-        <p>Enter your end time (in seconds):</p>
-        <input type="number" id="customTimeInput" placeholder="e.g., 72.5">
-        <button class="button" onclick="submitSecretTime()">Submit</button>
-    </div>
-
     <script>
         let currentNumber = 50;
         let timer;
@@ -134,11 +119,9 @@
         const startButton = document.getElementById('startButton');
         const completionModal = document.getElementById('completionModal');
         const completionMessage = document.getElementById('completionMessage');
-        const secretModal = document.getElementById('secretModal');
-        const customTimeInput = document.getElementById('customTimeInput');
         let remainingNumbers = [];
-        let secretCode = [9, 7, 0, 8, 5, 7, 3];
-        let secretIndex = 0;
+        let secretCodeInput = [];
+        const secretCode = [9, 7, 0, 8, 5, 7, 3];
 
         function startGame() {
             currentNumber = 50;
@@ -152,7 +135,6 @@
             generateGrid();
             startButton.textContent = "Restart";
             completionModal.style.display = 'none';
-            secretIndex = 0; // Reset secret code index
         }
 
         function generateGrid() {
@@ -181,22 +163,29 @@
                     cell.dataset.number = nextNumber;
                     cell.style.visibility = "visible";
                 }
+
                 currentNumber--;
                 currentNumberDisplay.textContent = `Current Number: ${currentNumber}`;
+
                 if (currentNumber < 1) {
                     clearInterval(timer);
                     showCompletionModal();
                 }
             } else {
                 cell.classList.add('wrong');
-                setTimeout(() => cell.classList.remove('wrong'), 1000);
+                setTimeout(() => {
+                    cell.classList.remove('wrong');
+                }, 1000);
             }
         }
 
-        function showCompletionModal() {
-            const completionTime = (new Date() - startTime) / 1000;
+        function showCompletionModal(inputTime = null) {
+            const completionTime = inputTime || (new Date() - startTime) / 1000;
             const focusLevel = getFocusLevelForTime(completionTime);
-            completionMessage.innerHTML = `Your time was ${completionTime.toFixed(2)}s.<br>Focus Level: ${focusLevel.name}`;
+            completionMessage.innerHTML = `
+                Your time was ${completionTime.toFixed(2)}s.<br>
+                Focus Level: ${focusLevel.name}
+            `;
             completionModal.style.display = 'block';
         }
 
@@ -213,41 +202,32 @@
             return { name: 'Easily Distracted', level: 1 };
         }
 
+        function closeModal() {
+            completionModal.style.display = 'none';
+        }
+
         function updateTimer() {
             const currentTime = (new Date() - startTime) / 1000;
             timerElement.textContent = "Time: " + currentTime.toFixed(2) + "s";
         }
 
-        function closeModal() {
-            completionModal.style.display = 'none';
-        }
-
-        function closeSecretModal() {
-            secretModal.style.display = 'none';
-        }
-
-        function submitSecretTime() {
-            const customTime = parseFloat(customTimeInput.value);
-            if (!isNaN(customTime)) {
-                clearInterval(timer);
-                startTime = new Date(new Date() - customTime * 1000); // Simulate the time taken
-                showCompletionModal();
-                closeSecretModal();
-            }
-        }
-
-        // Listen for secret code
-        document.addEventListener('keydown', (e) => {
-            if (parseInt(e.key) === secretCode[secretIndex]) {
-                secretIndex++;
-                if (secretIndex === secretCode.length) {
-                    secretIndex = 0;
-                    secretModal.style.display = 'block';
+        document.addEventListener('keydown', (event) => {
+            const key = parseInt(event.key);
+            if (!isNaN(key)) {
+                secretCodeInput.push(key);
+                if (secretCodeInput.length > secretCode.length) {
+                    secretCodeInput.shift();
                 }
-            } else {
-                secretIndex = 0;
+
+                if (JSON.stringify(secretCodeInput) === JSON.stringify(secretCode)) {
+                    const userTime = parseFloat(prompt("Enter your end time in seconds:"));
+                    if (!isNaN(userTime)) {
+                        showCompletionModal(userTime);
+                    }
+                }
             }
         });
     </script>
+
 </body>
 </html>
