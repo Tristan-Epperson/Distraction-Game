@@ -69,7 +69,7 @@
             font-size: 20px;
             color: #00ff88;
         }
-        .completion-modal {
+        .completion-modal, .secret-modal {
             display: none;
             position: fixed;
             top: 50%;
@@ -82,7 +82,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             z-index: 1000;
         }
-        .completion-modal .close-btn {
+        .completion-modal .close-btn, .secret-modal .close-btn {
             position: absolute;
             top: 10px;
             right: 10px;
@@ -92,16 +92,12 @@
             font-size: 20px;
             cursor: pointer;
         }
-        .hidden-cheat-box {
-            display: none;
-            margin-top: 20px;
-            text-align: center;
-        }
-        .hidden-cheat-box input {
+        .secret-modal input {
             padding: 5px;
-            font-size: 18px;
-            border: none;
+            font-size: 16px;
             border-radius: 5px;
+            border: none;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -120,28 +116,29 @@
         <p id="completionMessage">Your time was 0.00s</p>
     </div>
 
-    <!-- Hidden cheat input box -->
-    <div id="hiddenCheatBox" class="hidden-cheat-box">
-        <p>Enter your desired end time (in seconds):</p>
-        <input id="cheatInput" type="text" placeholder="Enter time here">
-        <button onclick="activateCheat()">Submit</button>
+    <!-- Secret input modal -->
+    <div id="secretModal" class="secret-modal">
+        <button class="close-btn" onclick="closeSecretModal()">X</button>
+        <p>Enter your end time (in seconds):</p>
+        <input type="number" id="customTimeInput" placeholder="e.g., 72.5">
+        <button class="button" onclick="submitSecretTime()">Submit</button>
     </div>
 
     <script>
         let currentNumber = 50;
         let timer;
         let startTime;
-        let cheatSequence = [9, 7, 0, 8, 5, 7, 3];
-        let cheatIndex = 0;
         const gridElement = document.querySelector('.grid');
         const timerElement = document.getElementById('timer');
         const currentNumberDisplay = document.getElementById('currentNumberDisplay');
         const startButton = document.getElementById('startButton');
         const completionModal = document.getElementById('completionModal');
         const completionMessage = document.getElementById('completionMessage');
-        const hiddenCheatBox = document.getElementById('hiddenCheatBox');
-        const cheatInput = document.getElementById('cheatInput');
+        const secretModal = document.getElementById('secretModal');
+        const customTimeInput = document.getElementById('customTimeInput');
         let remainingNumbers = [];
+        let secretCode = [9, 7, 0, 8, 5, 7, 3];
+        let secretIndex = 0;
 
         function startGame() {
             currentNumber = 50;
@@ -155,8 +152,7 @@
             generateGrid();
             startButton.textContent = "Restart";
             completionModal.style.display = 'none';
-            hiddenCheatBox.style.display = 'none'; // Hide the cheat box if visible
-            cheatIndex = 0; // Reset cheat code
+            secretIndex = 0; // Reset secret code index
         }
 
         function generateGrid() {
@@ -179,6 +175,12 @@
 
             if (clickedNumber === currentNumber) {
                 cell.classList.add('correct');
+                if (currentNumber > 1) {
+                    const nextNumber = remainingNumbers.shift();
+                    cell.textContent = nextNumber;
+                    cell.dataset.number = nextNumber;
+                    cell.style.visibility = "visible";
+                }
                 currentNumber--;
                 currentNumberDisplay.textContent = `Current Number: ${currentNumber}`;
                 if (currentNumber < 1) {
@@ -211,39 +213,41 @@
             return { name: 'Easily Distracted', level: 1 };
         }
 
-        function closeModal() {
-            completionModal.style.display = 'none';
-        }
-
         function updateTimer() {
             const currentTime = (new Date() - startTime) / 1000;
             timerElement.textContent = "Time: " + currentTime.toFixed(2) + "s";
         }
 
-        // Cheat code detection
-        document.addEventListener('keydown', (event) => {
-            const pressedKey = parseInt(event.key);
-            if (pressedKey === cheatSequence[cheatIndex]) {
-                cheatIndex++;
-                if (cheatIndex === cheatSequence.length) {
-                    hiddenCheatBox.style.display = 'block';
-                    cheatIndex = 0;
-                }
-            } else {
-                cheatIndex = 0;
-            }
-        });
+        function closeModal() {
+            completionModal.style.display = 'none';
+        }
 
-        function activateCheat() {
-            const cheatTime = parseFloat(cheatInput.value);
-            if (!isNaN(cheatTime)) {
-                const focusLevel = getFocusLevelForTime(cheatTime);
-                completionMessage.innerHTML = `Your time was ${cheatTime.toFixed(2)}s.<br>Focus Level: ${focusLevel.name}`;
-                completionModal.style.display = 'block';
-                hiddenCheatBox.style.display = 'none';
+        function closeSecretModal() {
+            secretModal.style.display = 'none';
+        }
+
+        function submitSecretTime() {
+            const customTime = parseFloat(customTimeInput.value);
+            if (!isNaN(customTime)) {
+                clearInterval(timer);
+                startTime = new Date(new Date() - customTime * 1000); // Simulate the time taken
+                showCompletionModal();
+                closeSecretModal();
             }
         }
-    </script>
 
+        // Listen for secret code
+        document.addEventListener('keydown', (e) => {
+            if (parseInt(e.key) === secretCode[secretIndex]) {
+                secretIndex++;
+                if (secretIndex === secretCode.length) {
+                    secretIndex = 0;
+                    secretModal.style.display = 'block';
+                }
+            } else {
+                secretIndex = 0;
+            }
+        });
+    </script>
 </body>
 </html>
