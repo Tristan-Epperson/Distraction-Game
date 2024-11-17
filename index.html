@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>50 to 1 Game</title>
+    <title>Distraction Game</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -92,12 +92,23 @@
             font-size: 20px;
             cursor: pointer;
         }
+        .distraction {
+            position: absolute;
+            font-size: 30px;
+            color: #ff0000;
+            animation: popUp 1s ease-out forwards;
+        }
+        @keyframes popUp {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0; transform: scale(1); }
+        }
     </style>
 </head>
 <body>
 
-    <h1>50 to 1</h1>
-    <p>Click from 50 to 1 as fast as you can!</p>
+    <h1>Distraction Game</h1>
+    <p>Click from 50 to 1 as fast as you can while distractions appear!</p>
     <button class="button" id="startButton" onclick="startGame()">Start Game</button>
     <div class="counter" id="currentNumberDisplay">Current Number: 50</div>
     <div class="grid"></div>
@@ -120,6 +131,7 @@
         const completionModal = document.getElementById('completionModal');
         const completionMessage = document.getElementById('completionMessage');
         let remainingNumbers = [];
+        let distractionInterval;
 
         function startGame() {
             currentNumber = 50;
@@ -127,7 +139,9 @@
             remainingNumbers.sort(() => Math.random() - 0.5);
             startTime = new Date();
             clearInterval(timer);
+            clearInterval(distractionInterval);
             timer = setInterval(updateTimer, 10);
+            distractionInterval = setInterval(showDistraction, 2000); // Random distraction every 2 seconds
             timerElement.textContent = "Time: 0.00s";
             currentNumberDisplay.textContent = `Current Number: ${currentNumber}`;
             generateGrid();
@@ -169,6 +183,7 @@
 
                 if (currentNumber < 1) {
                     clearInterval(timer);
+                    clearInterval(distractionInterval);
                     showCompletionModal();
                 }
             } else {
@@ -182,22 +197,8 @@
 
         function showCompletionModal() {
             const completionTime = (new Date() - startTime) / 1000;
-            const focusLevel = getFocusLevelForTime(completionTime);
-            completionMessage.innerHTML = `Your time was ${completionTime.toFixed(2)}s.<br>Focus Level: ${focusLevel.name}`;
+            completionMessage.innerHTML = `Your time was ${completionTime.toFixed(2)}s`;
             completionModal.style.display = 'block';
-        }
-
-        function getFocusLevelForTime(time) {
-            if (time < 70) return { name: 'Laser Focused', level: 10 };
-            if (time < 80) return { name: 'Super Focused', level: 9 };
-            if (time < 90) return { name: 'Focused', level: 8 };
-            if (time < 100) return { name: 'Concentrated', level: 7 };
-            if (time < 110) return { name: 'Attentive', level: 6 };
-            if (time < 120) return { name: 'Alert', level: 5 };
-            if (time < 130) return { name: 'Distracted', level: 4 };
-            if (time < 140) return { name: 'Dazed', level: 3 };
-            if (time < 150) return { name: 'Forgetful', level: 2 };
-            return { name: 'Easily Distracted', level: 1 };
         }
 
         function closeModal() {
@@ -207,6 +208,22 @@
         function updateTimer() {
             const currentTime = (new Date() - startTime) / 1000;
             timerElement.textContent = "Time: " + currentTime.toFixed(2) + "s";
+        }
+
+        function showDistraction() {
+            const distractionText = ["Look out!", "Hurry!", "What's that?", "Time's ticking!"];
+            const randomDistraction = distractionText[Math.floor(Math.random() * distractionText.length)];
+            
+            const distractionElement = document.createElement("div");
+            distractionElement.classList.add("distraction");
+            distractionElement.textContent = randomDistraction;
+            
+            document.body.appendChild(distractionElement);
+
+            // Remove distraction after animation ends
+            setTimeout(() => {
+                distractionElement.remove();
+            }, 1000); // Distraction stays for 1 second
         }
     </script>
 
