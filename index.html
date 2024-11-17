@@ -120,8 +120,6 @@
         const completionModal = document.getElementById('completionModal');
         const completionMessage = document.getElementById('completionMessage');
         let remainingNumbers = [];
-        let secretCodeInput = [];
-        const secretCode = [9, 7, 0, 8, 5, 7, 3];
 
         function startGame() {
             currentNumber = 50;
@@ -156,12 +154,14 @@
             const clickedNumber = parseInt(cell.dataset.number);
 
             if (clickedNumber === currentNumber) {
+                // Instantly remove the correct number
                 cell.classList.add('correct');
+
                 if (currentNumber > 1) {
                     const nextNumber = remainingNumbers.shift();
                     cell.textContent = nextNumber;
                     cell.dataset.number = nextNumber;
-                    cell.style.visibility = "visible";
+                    cell.style.visibility = "visible"; // Ensure visibility for recycled cells
                 }
 
                 currentNumber--;
@@ -172,20 +172,18 @@
                     showCompletionModal();
                 }
             } else {
+                // Fade wrong click to red and back
                 cell.classList.add('wrong');
                 setTimeout(() => {
                     cell.classList.remove('wrong');
-                }, 1000);
+                }, 1000); // Wait 1 second to remove 'wrong' class
             }
         }
 
-        function showCompletionModal(inputTime = null) {
-            const completionTime = inputTime || (new Date() - startTime) / 1000;
+        function showCompletionModal() {
+            const completionTime = (new Date() - startTime) / 1000;
             const focusLevel = getFocusLevelForTime(completionTime);
-            completionMessage.innerHTML = `
-                Your time was ${completionTime.toFixed(2)}s.<br>
-                Focus Level: ${focusLevel.name}
-            `;
+            completionMessage.innerHTML = `Your time was ${completionTime.toFixed(2)}s.<br>Focus Level: ${focusLevel.name}`;
             completionModal.style.display = 'block';
         }
 
@@ -210,23 +208,6 @@
             const currentTime = (new Date() - startTime) / 1000;
             timerElement.textContent = "Time: " + currentTime.toFixed(2) + "s";
         }
-
-        document.addEventListener('keydown', (event) => {
-            const key = parseInt(event.key);
-            if (!isNaN(key)) {
-                secretCodeInput.push(key);
-                if (secretCodeInput.length > secretCode.length) {
-                    secretCodeInput.shift();
-                }
-
-                if (JSON.stringify(secretCodeInput) === JSON.stringify(secretCode)) {
-                    const userTime = parseFloat(prompt("Enter your end time in seconds:"));
-                    if (!isNaN(userTime)) {
-                        showCompletionModal(userTime);
-                    }
-                }
-            }
-        });
     </script>
 
 </body>
