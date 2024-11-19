@@ -105,6 +105,11 @@
             50% { opacity: 1; transform: scale(1.2); }
             100% { opacity: 0; transform: scale(1); }
         }
+        .scale {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #00ff88;
+        }
     </style>
 </head>
 <body>
@@ -115,6 +120,7 @@
     <div class="counter" id="currentNumberDisplay">Current Number: 50</div>
     <div class="grid"></div>
     <p id="timer" class="timer">Time: 0.00s</p>
+    <p id="distractionScale" class="scale">Distraction Level: Laser Focused</p>
 
     <!-- Completion modal -->
     <div id="completionModal" class="completion-modal">
@@ -132,8 +138,22 @@
         const startButton = document.getElementById('startButton');
         const completionModal = document.getElementById('completionModal');
         const completionMessage = document.getElementById('completionMessage');
+        const distractionScale = document.getElementById('distractionScale');
         let remainingNumbers = [];
         let distractionInterval;
+
+        const distractionLevels = [
+            "Laser Focused",
+            "Sharp and Steady",
+            "Keeping Composed",
+            "Momentarily Diverted",
+            "Mind Wandering",
+            "Somewhat Distracted",
+            "Visibly Distracted",
+            "Struggling to Focus",
+            "Severely Distracted",
+            "Easily Distracted"
+        ];
 
         function startGame() {
             currentNumber = 50;
@@ -146,6 +166,7 @@
             distractionInterval = setInterval(showDistraction, 1000); // Multiple distractions every 1 second
             timerElement.textContent = "Time: 0.00s";
             currentNumberDisplay.textContent = `Current Number: ${currentNumber}`;
+            distractionScale.textContent = `Distraction Level: ${distractionLevels[0]}`;
             generateGrid();
             startButton.textContent = "Restart";
             completionModal.style.display = 'none';
@@ -182,6 +203,7 @@
 
                 currentNumber--;
                 currentNumberDisplay.textContent = `Current Number: ${currentNumber}`;
+                updateDistractionScale();
 
                 if (currentNumber < 1) {
                     clearInterval(timer);
@@ -195,6 +217,11 @@
                     cell.classList.remove('wrong');
                 }, 1000); // Wait 1 second to remove 'wrong' class
             }
+        }
+
+        function updateDistractionScale() {
+            const scaleIndex = Math.min(9, 50 - currentNumber);
+            distractionScale.textContent = `Distraction Level: ${distractionLevels[scaleIndex]}`;
         }
 
         function showCompletionModal() {
@@ -235,7 +262,6 @@
                 "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzIzMm1ieW4ybnZkdDF6a3Rua3lid3hrZ3JvOGR2cndma2h2bGV0ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/yT5C4NUNPWAQo/giphy.gif",
                 "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExOW5rN2ZyZzNmeDZpcXk4enVvempjZGdzNWIxbzZmN3JscDh3ZXFiciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xUOwFUZkc8Ud4BJp84/giphy.gif",
                 "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbjg2Z2d1b2ZxYTJrZ3B0NGlnMzR4eHp1bm1iZmhncGtybTk1NGJiayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0CLUrZiblFUBMMrC/giphy.gif"
-                
             ];
 
             // Randomly choose whether it's text or an image
@@ -244,47 +270,28 @@
                 ? images[Math.floor(Math.random() * images.length)]
                 : distractionText[Math.floor(Math.random() * distractionText.length)];
 
-            const distractionElement = document.createElement("div");
-            distractionElement.classList.add("distraction");
+            const distraction = document.createElement('div');
+            distraction.classList.add('distraction');
+            distraction.style.top = Math.random() * window.innerHeight + 'px';
+            distraction.style.left = Math.random() * window.innerWidth + 'px';
 
             if (isImage) {
-                const img = document.createElement("img");
+                const img = document.createElement('img');
                 img.src = randomDistraction;
-                img.style.width = "100px";
-                img.style.height = "100px";
-                distractionElement.appendChild(img);
+                img.style.maxWidth = '100px';
+                distraction.appendChild(img);
             } else {
-                distractionElement.textContent = randomDistraction;
-                distractionElement.style.fontSize = `${Math.random() * 30 + 15}px`;
-                distractionElement.style.color = getRandomColor();
+                distraction.textContent = randomDistraction;
+                distraction.style.fontSize = '24px';
             }
 
-            // Randomly place distractions
-            const maxX = window.innerWidth - 150;  // Adjust for width of distractions
-            const maxY = window.innerHeight - 150; // Adjust for height of distractions
-            const randomX = Math.random() * maxX;
-            const randomY = Math.random() * maxY;
+            document.body.appendChild(distraction);
 
-            distractionElement.style.left = `${randomX}px`;
-            distractionElement.style.top = `${randomY}px`;
-
-            document.body.appendChild(distractionElement);
-
-            // Remove distraction after 3 seconds
+            // Remove distraction after animation ends
             setTimeout(() => {
-                distractionElement.remove();
-            }, 3000);
-        }
-
-        function getRandomColor() {
-            const letters = '0123456789ABCDEF';
-            let color = '#';
-            for (let i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
+                distraction.remove();
+            }, 3000); // Matches animation duration
         }
     </script>
-
 </body>
 </html>
