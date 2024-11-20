@@ -100,15 +100,15 @@
             animation: popUp 3s ease-out forwards;
             pointer-events: none; /* Make distractions not interactable */
         }
+        .distraction-scale {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #f1f1f1;
+        }
         @keyframes popUp {
             0% { opacity: 0; transform: scale(0.5); }
             50% { opacity: 1; transform: scale(1.2); }
             100% { opacity: 0; transform: scale(1); }
-        }
-        .scale {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #00ff88;
         }
     </style>
 </head>
@@ -120,12 +120,12 @@
     <div class="counter" id="currentNumberDisplay">Current Number: 50</div>
     <div class="grid"></div>
     <p id="timer" class="timer">Time: 0.00s</p>
-    <p id="distractionScale" class="scale">Distraction Level: Laser Focused</p>
 
     <!-- Completion modal -->
     <div id="completionModal" class="completion-modal">
         <button class="close-btn" onclick="closeModal()">X</button>
         <p id="completionMessage">Your time was 0.00s</p>
+        <p id="distractionScale" class="distraction-scale"></p>
     </div>
 
     <script>
@@ -144,14 +144,14 @@
 
         const distractionLevels = [
             "Laser Focused",
-            "Sharp and Steady",
-            "Keeping Composed",
-            "Momentarily Diverted",
-            "Mind Wandering",
-            "Somewhat Distracted",
-            "Visibly Distracted",
-            "Struggling to Focus",
-            "Severely Distracted",
+            "Sharp Mind",
+            "Keen Concentration",
+            "Steady Gaze",
+            "Moderately Distracted",
+            "Slightly Scattered",
+            "Occasionally Diverted",
+            "Frequent Wanderer",
+            "Daydreamer",
             "Easily Distracted"
         ];
 
@@ -166,7 +166,6 @@
             distractionInterval = setInterval(showDistraction, 1000); // Multiple distractions every 1 second
             timerElement.textContent = "Time: 0.00s";
             currentNumberDisplay.textContent = `Current Number: ${currentNumber}`;
-            distractionScale.textContent = `Distraction Level: ${distractionLevels[0]}`;
             generateGrid();
             startButton.textContent = "Restart";
             completionModal.style.display = 'none';
@@ -191,19 +190,17 @@
             const clickedNumber = parseInt(cell.dataset.number);
 
             if (clickedNumber === currentNumber) {
-                // Instantly remove the correct number
                 cell.classList.add('correct');
 
                 if (currentNumber > 1) {
                     const nextNumber = remainingNumbers.shift();
                     cell.textContent = nextNumber;
                     cell.dataset.number = nextNumber;
-                    cell.style.visibility = "visible"; // Ensure visibility for recycled cells
+                    cell.style.visibility = "visible";
                 }
 
                 currentNumber--;
                 currentNumberDisplay.textContent = `Current Number: ${currentNumber}`;
-                updateDistractionScale();
 
                 if (currentNumber < 1) {
                     clearInterval(timer);
@@ -211,22 +208,21 @@
                     showCompletionModal();
                 }
             } else {
-                // Fade wrong click to red and back
                 cell.classList.add('wrong');
                 setTimeout(() => {
                     cell.classList.remove('wrong');
-                }, 1000); // Wait 1 second to remove 'wrong' class
+                }, 1000);
             }
-        }
-
-        function updateDistractionScale() {
-            const scaleIndex = Math.min(9, 50 - currentNumber);
-            distractionScale.textContent = `Distraction Level: ${distractionLevels[scaleIndex]}`;
         }
 
         function showCompletionModal() {
             const completionTime = (new Date() - startTime) / 1000;
             completionMessage.innerHTML = `Your time was ${completionTime.toFixed(2)}s`;
+
+            // Calculate distraction scale based on completion time
+            const distractionIndex = Math.min(Math.floor(completionTime / 10), distractionLevels.length - 1);
+            distractionScale.textContent = `Distraction Level: ${distractionLevels[distractionIndex]}`;
+
             completionModal.style.display = 'block';
         }
 
@@ -264,34 +260,35 @@
                 "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbjg2Z2d1b2ZxYTJrZ3B0NGlnMzR4eHp1bm1iZmhncGtybTk1NGJiayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0CLUrZiblFUBMMrC/giphy.gif"
             ];
 
-            // Randomly choose whether it's text or an image
             const isImage = Math.random() > 0.5;
             const randomDistraction = isImage
                 ? images[Math.floor(Math.random() * images.length)]
                 : distractionText[Math.floor(Math.random() * distractionText.length)];
 
-            const distraction = document.createElement('div');
-            distraction.classList.add('distraction');
-            distraction.style.top = Math.random() * window.innerHeight + 'px';
-            distraction.style.left = Math.random() * window.innerWidth + 'px';
+            const distractionElement = document.createElement("div");
+            distractionElement.classList.add("distraction");
 
             if (isImage) {
-                const img = document.createElement('img');
+                const img = document.createElement("img");
                 img.src = randomDistraction;
-                img.style.maxWidth = '100px';
-                distraction.appendChild(img);
+                img.style.width = "100px";
+                img.style.height = "100px";
+                distractionElement.appendChild(img);
             } else {
-                distraction.textContent = randomDistraction;
-                distraction.style.fontSize = '24px';
+                distractionElement.textContent = randomDistraction;
+                distractionElement.style.fontSize = "18px";
             }
 
-            document.body.appendChild(distraction);
+            distractionElement.style.top = `${Math.random() * 80 + 10}%`;
+            distractionElement.style.left = `${Math.random() * 80 + 10}%`;
 
-            // Remove distraction after animation ends
+            document.body.appendChild(distractionElement);
+
             setTimeout(() => {
-                distraction.remove();
-            }, 3000); // Matches animation duration
+                distractionElement.remove();
+            }, 3000);
         }
     </script>
+
 </body>
 </html>
