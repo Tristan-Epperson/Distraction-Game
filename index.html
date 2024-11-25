@@ -129,33 +129,6 @@
     </div>
 
     <script>
-        // Function to determine rank and level based on completion time
-function getRankByTime(time) {
-    if (time < 70) return { name: 'Laser Focused', level: 10 };
-    if (time < 80) return { name: 'Super Focused', level: 9 };
-    if (time < 90) return { name: 'Focused', level: 8 };
-    if (time < 100) return { name: 'Concentrated', level: 7 };
-    if (time < 110) return { name: 'Attentive', level: 6 };
-    if (time < 120) return { name: 'Alert', level: 5 };
-    if (time < 130) return { name: 'Distracted', level: 4 };
-    if (time < 140) return { name: 'Dazed', level: 3 };
-    if (time < 150) return { name: 'Forgetful', level: 2 };
-    return { name: 'Easily Distracted', level: 1 };
-}
-
-// Example usage within your game logic
-const completionTime = calculateCompletionTime(); // Assuming this function exists
-
-// Get the rank based on the time
-const rank = getRankByTime(completionTime);
-
-// Display the rank
-document.getElementById('rankDisplay').textContent = `Rank: ${rank.name} (Level: ${rank.level})`;
-
-// Debug log for developers
-console.log(`Completion Time: ${completionTime}`);
-console.log(`Rank: ${rank.name}, Level: ${rank.level}`);
-
         let currentNumber = 50;
         let timer;
         let startTime;
@@ -169,18 +142,18 @@ console.log(`Rank: ${rank.name}, Level: ${rank.level}`);
         let remainingNumbers = [];
         let distractionInterval;
 
-const distractionLevels = [
-    "Laser Focused",
-    "Sharp Mind",
-    "Keen Concentration",
-    "Steady Gaze",
-    "Moderately Distracted",
-    "Slightly Scattered",
-    "Occasionally Diverted",
-    "Frequent Wanderer",
-    "Daydreamer",
-    "Easily Distracted"
-];
+        const distractionLevels = [
+            "Laser Focused",
+            "Sharp Mind",
+            "Keen Concentration",
+            "Steady Gaze",
+            "Moderately Distracted",
+            "Slightly Scattered",
+            "Occasionally Diverted",
+            "Frequent Wanderer",
+            "Daydreamer",
+            "Easily Distracted"
+        ];
 
         function startGame() {
             currentNumber = 50;
@@ -248,8 +221,7 @@ const distractionLevels = [
 
             // Calculate distraction scale based on completion time
             const distractionIndex = Math.min(Math.floor(completionTime / 10), distractionLevels.length - 1);
-            distractionScale.innerHTML = `<strong style="color: ${getColor(distractionIndex)};">${distractionLevels[distractionIndex]}</strong>`;
-
+            distractionScale.textContent = `Distraction Level: ${distractionLevels[distractionIndex]}`;
 
             completionModal.style.display = 'block';
         }
