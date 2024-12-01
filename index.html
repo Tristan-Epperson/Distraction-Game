@@ -220,7 +220,13 @@
             completionMessage.innerHTML = `Your time was ${completionTime.toFixed(2)}s`;
 
             // Calculate distraction scale based on completion time
-            const distractionIndex = Math.min(Math.floor(completionTime / 10), distractionLevels.length - 1);
+const distractionIndex = Math.max(
+    0,
+    Math.min(
+        9,
+        Math.floor((160 - completionTime) / 10)
+    )
+);
             distractionScale.textContent = `Distraction Level: ${distractionLevels[distractionIndex]}`;
 
             completionModal.style.display = 'block';
